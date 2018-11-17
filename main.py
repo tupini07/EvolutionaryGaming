@@ -2,7 +2,7 @@ import random
 from time import time
 import inspyred
 import evolutionary_problem as problem
-
+import constants
 
 from inspyred import ec
 
@@ -27,8 +27,7 @@ def main(prng=None, display=False):
     ea.selector = inspyred.ec.selectors.tournament_selection
 
     ea.variator = [problem.mutate,
-                   problem.crossover,
-                   inspyred.ec.variators.gaussian_mutation]
+                   problem.crossover]
     
     ea.replacer = inspyred.ec.replacers.steady_state_replacement
     ea.terminator = inspyred.ec.terminators.generation_termination
@@ -37,13 +36,13 @@ def main(prng=None, display=False):
 
     final_pop = ea.evolve(generator=problem.generator,
                           evaluator=problem.evaluator,
-                          pop_size=100,
+                          pop_size=constants.POPULATION_SIZE,
                           bounder=problem.bounder,
                           maximize=problem.maximize,
-                          tournament_size=7,
-                          num_selected=2,
-                          max_generations=300,
-                          mutation_rate=0.2)
+                          tournament_size=2,
+                          num_selected=1,
+                          max_generations=1000,
+                          mutation_rate=1) # we need to control mutation manually with m_probs in constants
 
     if display:
         best = max(final_pop)

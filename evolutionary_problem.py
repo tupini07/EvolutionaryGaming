@@ -10,15 +10,8 @@ import random
 
 from inspyred import ec
 from inspyred.benchmarks import Benchmark
+from constants import N_TOTAL_GENES
 
-# Set module variables
-
-N_INNER_NODES = 100
-
-# a note on node representation:
-#   while reading the atari paper it seems to me that the structure of each genome is as follows
-#   [ (16 real numbers, one for each output), (3 placeholder numbers representing the indexes of inputs), (4 numbers per each node), ]
-N_TOTAL_GENES = 16 + 3 + (4 * N_INNER_NODES)
 
 bounder = ec.Bounder([0.0] * N_TOTAL_GENES, [1.0] * N_TOTAL_GENES)
 
@@ -34,7 +27,7 @@ def generator(random, args):
 
 def observer(population, num_generations, num_evaluations, args):
     best = max(population)
-    print(f"GEN: {num_generations} \t   Best fitness: {best.fitness}")
+    print(f"GEN: {num_generations} \t Best fitness: {best.fitness} \t Pop size {len(population)}")
 
 
 @ec.variators.crossover
@@ -51,15 +44,20 @@ def evaluator(candidate, args):
     # not implemented yet, but the flow will be something like this
     # note that this operates on one candidate at a time
 
-    fitness = random.random()
+    fitness = sum(candidate)
 
     return fitness
 
 
 @ec.variators.mutator
 def mutate(random, candidate, args):
+    
     # not implemented yet, leaving below as reference
     # note that this acts on a single candidate, so example below is not 100% correct
+
+    # atari paper dateils in section 3.2 : Evolution
+    
+    # see `constants` module for mutation probabilities
 
     # mut_rate = args.setdefault('mutation_rate', 0.1)
     # bounder = args['_ec'].bounder
