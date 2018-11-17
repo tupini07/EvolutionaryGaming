@@ -34,8 +34,11 @@ def observer(population, num_generations, num_evaluations, args):
 def crossover(random, mom, dad, args):
     # still need to create doc
 
-    # using crossover from paper: A New Crossover Technique for Cartesian Genetic Programming
+    # this seems to be very similar to : ec.variators.arithmetic_crossover
+    # see for implementation https://github.com/aarongarrett/inspyred/blob/master/inspyred/ec/variators/crossovers.py#L216
 
+    # using crossover from paper: A New Crossover Technique for Cartesian Genetic Programming
+    
     def gen_offspring():
         ri = random.uniform(0.0, 1.0)
         iri = 1 - ri # inverse of ri
@@ -60,7 +63,7 @@ def evaluator(candidate, args):
 
 @ec.variators.mutator
 def mutate(random, candidate, args):
-    
+
     # not implemented yet, leaving below as reference
     # note that this acts on a single candidate, so example below is not 100% correct
 
@@ -68,14 +71,7 @@ def mutate(random, candidate, args):
     
     # see `constants` module for mutation probabilities
 
-    # mut_rate = args.setdefault('mutation_rate', 0.1)
-    # bounder = args['_ec'].bounder
-    # for i, cs in enumerate(candidates):
-    #     for j, (c, lo, hi) in enumerate(zip(cs, bounder.lower_bound, bounder.upper_bound)):
-    #         if random.random() < mut_rate:
-    #             x = c[0] + random.gauss(0, 1) * (hi - lo)
-    #             y = c[1] + random.gauss(0, 1) * (hi - lo)
-    #             candidates[i][j] = (x, y)
-    #     candidates[i] = bounder(candidates[i], args)
+    for f, _ in enumerate(candidate):
+        candidate[f] += random.uniform(-0.2, 0.2)
 
     return candidate

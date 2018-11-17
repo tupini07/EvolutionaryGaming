@@ -7,31 +7,23 @@ import constants
 from inspyred import ec
 
 
-@ec.evaluators.evaluator
-def evaluate(candidate, args):
-    # not implemented yet, but the flow will be something like this
-    # note that this operates on one candidate at a time
-
-    fitness =  random.random()
-
-    return fitness
-
-
 def main(prng=None, display=False):
     if prng is None:
         prng = random.Random()
         prng.seed(time())
 
-    ea = inspyred.ec.EvolutionaryComputation(prng)
+    ea = inspyred.ec.GA(prng)
 
     ea.selector = inspyred.ec.selectors.tournament_selection
 
     ea.variator = [problem.mutate,
                    problem.crossover]
-    
-    ea.replacer = inspyred.ec.replacers.steady_state_replacement
+
+    # ea.replacer = inspyred.ec.replacers.steady_state_replacement
+    ea.replacer = inspyred.ec.replacers.plus_replacement
+
     ea.terminator = inspyred.ec.terminators.generation_termination
-    
+
     ea.observer = problem.observer
 
     final_pop = ea.evolve(generator=problem.generator,
@@ -40,9 +32,8 @@ def main(prng=None, display=False):
                           bounder=problem.bounder,
                           maximize=problem.maximize,
                           tournament_size=2,
-                          num_selected=1,
-                          max_generations=1000,
-                          mutation_rate=1) # we need to control mutation manually with m_probs in constants
+                          max_generations=10,
+                          mutation_rate=1.0)  # we need to control mutation manually with m_probs in constants
 
     if display:
         best = max(final_pop)
