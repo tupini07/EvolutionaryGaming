@@ -15,13 +15,12 @@ from inspyred.benchmarks import Benchmark
 
 N_INNER_NODES = 100
 
-# num inputs + inner nodes + output nodes
-N_TOTAL_NODES = 3 + N_INNER_NODES + 16
+# a note on node representation:
+#   while reading the atari paper it seems to me that the structure of each genome is as follows
+#   [ (16 real numbers, one for each output), (3 placeholder numbers representing the indexes of inputs), (4 numbers per each node), ]
+N_TOTAL_GENES = 16 + 3 + (4 * N_INNER_NODES)
 
-# 4 real numbers to represent each node (input input function parameter)
-N_TOTAL_GENES = 4 * N_TOTAL_NODES
-
-bounder = ec.Bounder([0.0] * N_TOTAL_NODES, [1] * N_TOTAL_NODES)
+bounder = ec.Bounder([0.0] * N_TOTAL_GENES, [1.0] * N_TOTAL_GENES)
 
 maximize = True
 
@@ -60,8 +59,6 @@ def evaluator(candidate, args):
 @ec.variators.mutator
 def mutate(random, candidate, args):
     # not implemented yet, leaving below as reference
-    # although we might not need to implement since inspyred already provides gaussian mutation
-
     # note that this acts on a single candidate, so example below is not 100% correct
 
     # mut_rate = args.setdefault('mutation_rate', 0.1)

@@ -26,7 +26,7 @@ def main(prng=None, display=False):
 
     ea.selector = inspyred.ec.selectors.tournament_selection
 
-    ea.variator = [# problem.mutate, # gaussian mutation should be enough
+    ea.variator = [problem.mutate,
                    problem.crossover,
                    inspyred.ec.variators.gaussian_mutation]
     
