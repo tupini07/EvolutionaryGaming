@@ -32,11 +32,20 @@ def observer(population, num_generations, num_evaluations, args):
 
 @ec.variators.crossover
 def crossover(random, mom, dad, args):
-    # not implemented yet
+    # still need to create doc
 
-    # operates on only 2 parent candidates at a time. It should return an iterable sequence of offspring (typically two)
+    # using crossover from paper: A New Crossover Technique for Cartesian Genetic Programming
 
-    return [mom, dad]
+    def gen_offspring():
+        ri = random.uniform(0.0, 1.0)
+        iri = 1 - ri # inverse of ri
+
+        p1 = [iri * g for g in mom]
+        p2 = [ri * g for g in dad]
+
+        return [p1[i] + p2[i] for i in range(len(mom))]
+
+    return [gen_offspring(), gen_offspring()]
 
 
 @ec.evaluators.evaluator

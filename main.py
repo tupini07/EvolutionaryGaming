@@ -51,4 +51,4 @@ def main(prng=None, display=False):
 
 
 if __name__ == '__main__':
-    main(display=True)
+    main(display=False)
