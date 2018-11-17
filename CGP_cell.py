@@ -31,13 +31,13 @@ class CGP_cell:
         inp2 = round(genome[1] * (num_cells-1))
         self.inputs = (inp1, inp2)
 
-        self.parameter = genome[2]
-
         #get function
         num_functions = len(function_set.functions)
-        func_pos = round(genome[3] * (num_functions - 1))
+        func_pos = round(genome[2] * (num_functions - 1))
         func_name = functions_set.functions[func_pos]
         self.function = getattr(function_set, func_name)
+
+        self.parameter = genome[3]
 
         self.last_value = 0
 

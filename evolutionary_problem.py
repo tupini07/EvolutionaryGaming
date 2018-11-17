@@ -18,13 +18,16 @@ N_INNER_NODES = 100
 # num inputs + inner nodes + output nodes
 N_TOTAL_NODES = 3 + N_INNER_NODES + 16
 
-# 4 real numbers to represent each node (input input parameter function)
+# 4 real numbers to represent each node (input input function parameter)
 N_TOTAL_GENES = 4 * N_TOTAL_NODES
 
 bounder = ec.Bounder([0.0] * N_TOTAL_NODES, [1] * N_TOTAL_NODES)
 
 maximize = True
 
+
+
+## Util functions for GC
 
 def generator(random, args):
     return [random.uniform(0.0, 1.0) for _ in range(N_TOTAL_GENES)]
