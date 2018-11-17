@@ -27,7 +27,7 @@ def generator(random, args):
 
 def observer(population, num_generations, num_evaluations, args):
     best = max(population)
-    print(f"GEN: {num_generations} \t Best fitness: {best.fitness} \t Pop size {len(population)}")
+    print(f"GEN: {num_generations} \t Best fitness: {best.fitness}")
 
 
 @ec.variators.crossover
