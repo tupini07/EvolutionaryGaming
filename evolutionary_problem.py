@@ -39,6 +39,8 @@ def crossover(random, mom, dad, args):
 
     # using crossover from paper: A New Crossover Technique for Cartesian Genetic Programming
     
+    bounder = args["_ec"].bounder
+
     def gen_offspring():
         ri = random.uniform(0.0, 1.0)
         iri = 1 - ri # inverse of ri
@@ -46,7 +48,7 @@ def crossover(random, mom, dad, args):
         p1 = [iri * g for g in mom]
         p2 = [ri * g for g in dad]
 
-        return [p1[i] + p2[i] for i in range(len(mom))]
+        return bounder([p1[i] + p2[i] for i in range(len(mom))], args)
 
     return [gen_offspring(), gen_offspring()]
 
@@ -74,4 +76,6 @@ def mutate(random, candidate, args):
     for f, _ in enumerate(candidate):
         candidate[f] += random.uniform(-0.2, 0.2)
 
-    return candidate
+    bounder = args["_ec"].bounder
+
+    return bounder(candidate, args)
