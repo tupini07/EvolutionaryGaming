@@ -42,4 +42,4 @@ def main(prng=None, display=False):
 
 
 if __name__ == '__main__':
-    main(display=False)
+    main(display=True)
