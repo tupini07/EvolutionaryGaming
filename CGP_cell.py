@@ -13,6 +13,8 @@ class CGP_cell:
         Extra parameter used by some functions from the function set.
     function : function
         Function from function set used to calculate the output value.
+    program : CGP_Program
+        CGP program of which the cell is a part.
     last_value : float or numpy.ndarray
         Value obtained in last function evaluation.
         Initialized as 0.
@@ -21,11 +23,13 @@ class CGP_cell:
     ----------
     genome : [float]
         List of four floating point values between 0 and 1 representing the genome of the cell.
+    program : CGP_Program
+        CGP program of which the cell is a part.
     num_cells : int
         Number of cells in the CGP this cell belongs to. Defaults to 100.
     """
 
-    def __init__(self, genome, num_cells=100):
+    def __init__(self, genome, program, num_cells=100):
         #get inputs
         inp1 = round(genome[0] * (num_cells-1))
         inp2 = round(genome[1] * (num_cells-1))
@@ -38,6 +42,8 @@ class CGP_cell:
         self.function = getattr(function_set, func_name)
 
         self.parameter = genome[3]
+
+        self.program = program
 
         self.last_value = 0
 
@@ -53,8 +59,8 @@ class CGP_cell:
         """
         func = getattr(function_set, self.function)
 
-        inp1 = self.inputs[0].last_value
-        inp2 = self.inputs[1].last_value
+        inp1 = self.program.last_value(inputs[0])
+        inp2 = self.program.last_value(inputs[1])
 
         result = function(inp1, inp2, self.parameter)
         self.last_value = result
