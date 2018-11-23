@@ -1,4 +1,5 @@
 import function_set
+from CGP_program import CGP_program
 
 
 class CGP_cell:
@@ -25,14 +26,12 @@ class CGP_cell:
         List of four floating point values between 0 and 1 representing the genome of the cell.
     program : CGP_Program
         CGP program of which the cell is a part.
-    num_cells : int
-        Number of cells in the CGP this cell belongs to. Defaults to 100.
     """
 
-    def __init__(self, genome, program, num_cells=100):
+    def __init__(self, genome, program):
         #get inputs
-        inp1 = round(genome[0] * (num_cells-1))
-        inp2 = round(genome[1] * (num_cells-1))
+        inp1 = round(genome[0] * (program.num_cells-1))
+        inp2 = round(genome[1] * (program.num_cells-1))
         self.inputs = (inp1, inp2)
 
         #get function
