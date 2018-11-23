@@ -1,18 +1,14 @@
-"""Here we define the helper operators for inspyred: mutation, crossover, and selection
-
-Note that we can't place these in a class because the function annotations don't like the (self) parameter
-So for the moment they can stay as a module
-"""
-
 import itertools
 import math
 import random
+from typing import Dict, List
 
+import numpy as np
 from inspyred import ec
 from inspyred.benchmarks import Benchmark
-import constants
 
-from typing import List, Dict
+import constants
+from CGP_program import CGP_program
 
 bounder = ec.Bounder(0.0, 1.0)
 
@@ -81,12 +77,19 @@ def evaluator(candidate: List, args: Dict) -> float:
     # not implemented yet, but the flow will be something like this
     # note that this operates on one candidate at a time
 
-    # todo Remember to add placeholder inputs to genome before evaluation! Something like:
-    candidate = candidate[:16] + ([0]*3) + candidate[16:]
+    candidate = ([0]*3*4) + candidate # the [0] *3*4 represent the genome for the input cells
+    cpg_genome = [candidate[i:i+4]
+                  for i in range(0, len(candidate), 4)]  # split into chunks
 
-    fitness = sum(candidate)
+    program = CGP_program(cpg_genome)
 
-    return fitness
+    # todo this is just a test input, need to connect with atari simulator.
+    # remember that the evaluation is done accross an entire game. So we evaluate and play the game until
+    # it ends, the final score is what we return from this function
+
+    # Note: that currently we're always getting 15 as the output. This is just because 15 is the "highest" action index
+    # and the program is maximizing
+    return program.evaluate(np.array([[[1, 2, 3, 4],[1, 2, 3, 4]], [[6, 6, 5, 4],[6, 6, 5, 4]], [[3, 4, 2, 1],[3, 4, 2, 1]]]))
 
 
 @ec.variators.mutator
@@ -100,8 +103,8 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
     # see `constants` module for mutation probabilities
 
     # todo mutation should be done with different probabilities on output nodes and on inner nodes, so they need to be separated
-    output_nodes = candidate[:16]
-    inner_nodes = candidate[16:]
+    output_nodes = candidate[-16:]
+    inner_nodes = candidate[:-16]
 
     for f, _ in enumerate(candidate):
         candidate[f] += random.uniform(-0.01, 0.01)
