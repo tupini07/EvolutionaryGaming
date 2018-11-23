@@ -19,7 +19,7 @@ class CGP_program:
         self.cells = []
         num_cells = len(genome)
         
-        for cell_genome in cells:
+        for cell_genome in genome:
             cell = CGP_cell(cell_genome, self)
             self.cells.append(cell)
 
@@ -38,7 +38,7 @@ class CGP_program:
             Last output of cell.
         """
 
-        last_value = cells[cell_num].last_value
+        last_value = self.cells[cell_num].last_value
 
         return last_value
 
@@ -64,7 +64,7 @@ class CGP_program:
         for cell in self.cells[3:]:
             cell.evaluate()
 
-        outputs = cells[-16:]
+        outputs = self.cells[-16:]
 
         max_val = outputs[0].last_value
         max_index = 0
