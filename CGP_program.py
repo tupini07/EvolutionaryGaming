@@ -100,7 +100,7 @@ class CGP_program:
 
         # just get the index of the "ouput" which has the maximum value
         outputs = [o.last_value for o in self.output_cells]
-        
+
         max_index = np.argmax(outputs)
 
         return max_index
