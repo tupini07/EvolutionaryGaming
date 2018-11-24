@@ -32,7 +32,7 @@ def main(prng=None, display=False):
                           bounder=problem.bounder,
                           maximize=problem.maximize,
                           tournament_size=2,
-                          max_generations=1000,
+                          max_generations=120,
                           mutation_rate=1.0)  # we need to control mutation manually with m_probs in constants
 
     if display:
