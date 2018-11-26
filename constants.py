@@ -3,7 +3,9 @@ import gym
 
 # these are taken from the Atari paper
 
-ATARI_GAME = "SpaceInvaders-v0"
+# ATARI_GAME = "SpaceInvaders-v0"
+ATARI_GAME = "Boxing-v0"
+
 _env = gym.make(ATARI_GAME)
 _env.reset()
 N_OUTPUT_NODES = _env.action_space.n
