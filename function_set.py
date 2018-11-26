@@ -2,7 +2,7 @@ import numpy as np
 import math
 import cv2
 
-functions = ["add", "sinx", "lt", "GaussianBlur"]
+functions = ["add", "sinx", "lt"]#, "GaussianBlur"]
 
 
 def add(inp1, inp2, parameter):

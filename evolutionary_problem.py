@@ -7,7 +7,8 @@ import numpy as np
 from inspyred import ec
 from inspyred.benchmarks import Benchmark
 
-import constants
+import constants as cc
+import gym
 from CGP_program import CGP_program
 
 bounder = ec.Bounder(0.0, 1.0)
@@ -19,13 +20,10 @@ maximize = True
 
 def generator(random: random.Random, args: Dict) -> List:
     """
-    Generate an individual of length `constants.N_EVOLVABLE_GENES` where every element in it is a random number x 
+    Generate an individual of length `cc.N_EVOLVABLE_GENES` where every element in it is a random number x 
     where 0 <= x <= 1 
 
-    The structure of the genome is as follos
-       [ (16 real numbers, one for each output), (3 placeholder numbers representing the indexes of inputs), (4 numbers per each node), ]
-
-    But only the 16 inputs and C (4 numbers per output) will be evolved, so the inputs are not considered part of t genome 
+    But only the outputs and C (number of inner nodes) will be evolved, so the inputs are not considered part of the genome 
 
     Parameters
     ----------
@@ -37,11 +35,11 @@ def generator(random: random.Random, args: Dict) -> List:
     Returns
     -------
     List
-        An individual of length `constants.N_EVOLVABLE_GENES` where every element in it is a random number x 
+        An individual of length `cc.N_EVOLVABLE_GENES` where every element in it is a random number x 
         where 0 <= x <= 1 
     """
 
-    return [random.uniform(0.0, 1.0) for _ in range(constants.N_EVOLVABLE_GENES)]
+    return [random.uniform(0.0, 1.0) for _ in range(cc.N_EVOLVABLE_GENES)]
 
 
 def observer(population, num_generations, num_evaluations, args):
@@ -73,13 +71,14 @@ def crossover(random: random.Random, mom: List, dad: List, args: Dict) -> List[L
 
 
 @ec.evaluators.evaluator
-def evaluator(candidate: List, args: Dict) -> float:
+def evaluator(candidate: List, args: Dict, render=True) -> float:
     # not implemented yet, but the flow will be something like this
     # note that this operates on one candidate at a time
 
-    candidate = ([0]*3*4) + candidate # the [0] *3*4 represent the genome for the input cells
+    # the [0] *3*4 represent the genome for the input cells
+    candidate = ([0]*3*4) + candidate
     cpg_genome = [candidate[i:i+4]
-                  for i in range(0, len(candidate), 4)]  # split into chunks
+                  for i in range(0, len(candidate), 4)]  # split into chunks of 4
 
     program = CGP_program(cpg_genome)
 
@@ -89,7 +88,28 @@ def evaluator(candidate: List, args: Dict) -> float:
 
     # Note: that currently we're always getting 15 as the output. This is just because 15 is the "highest" action index
     # and the program is maximizing
-    return program.evaluate(np.array([[[1, 2, 3, 4],[1, 2, 3, 4]], [[6, 6, 5, 4],[6, 6, 5, 4]], [[3, 4, 2, 1],[3, 4, 2, 1]]]))
+
+    env = gym.make(cc.ATARI_GAME)
+    observation = env.reset()
+    total_score = 0.0
+
+    for _ in range(10_000):
+
+        if render:
+            env.render()
+
+        action = program.evaluate(np.transpose(observation, [2, 0, 1]))
+
+        assert env.action_space.contains(
+            action), "CGP suggested an illegal action: " + action + "\nAvailable actions are: " + env.action_space
+
+        observation, reward, done, info = env.step(action)
+        total_score += reward
+
+        if done:
+            break
+
+    return total_score
 
 
 @ec.variators.mutator
@@ -103,8 +123,8 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
     # see `constants` module for mutation probabilities
 
     # todo mutation should be done with different probabilities on output nodes and on inner nodes, so they need to be separated
-    output_nodes = candidate[-16:]
-    inner_nodes = candidate[:-16]
+    output_nodes = candidate[-cc.N_OUTPUT_NODES:]
+    inner_nodes = candidate[:-cc.N_OUTPUT_NODES]
 
     for f, _ in enumerate(candidate):
         candidate[f] += random.uniform(-0.01, 0.01)

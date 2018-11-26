@@ -1,5 +1,5 @@
 import numpy as np
-
+import constants as cc
 from CGP_cell import CGP_cell
 
 
@@ -33,7 +33,7 @@ class CGP_program:
         for c in self.input_cells: # if we specify the output and input cells as different classes then this can be removed
             c.is_input_cell = True
 
-        self.output_cells = self.cells[-16:]
+        self.output_cells = self.cells[-cc.N_OUTPUT_NODES:]
         for c in self.output_cells:
             c.is_output_cell = True
 

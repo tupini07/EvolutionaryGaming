@@ -2,7 +2,7 @@ import random
 from time import time
 import inspyred
 import evolutionary_problem as problem
-import constants
+import constants as cc
 
 from inspyred import ec
 
@@ -28,7 +28,7 @@ def main(prng=None, display=False):
 
     final_pop = ea.evolve(generator=problem.generator,
                           evaluator=problem.evaluator,
-                          pop_size=constants.POPULATION_SIZE,
+                          pop_size=cc.POPULATION_SIZE,
                           bounder=problem.bounder,
                           maximize=problem.maximize,
                           tournament_size=2,
