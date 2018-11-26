@@ -104,6 +104,8 @@ def evaluator(candidate: List, args: Dict, render=True) -> float:
             action), "CGP suggested an illegal action: " + action + "\nAvailable actions are: " + env.action_space
 
         observation, reward, done, info = env.step(action)
+
+        # todo: the award for time survived is just random
         total_score += reward + 0.01 # score + award for time survived
 
         if done:
