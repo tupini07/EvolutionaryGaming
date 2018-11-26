@@ -37,8 +37,6 @@ class CGP_program:
         for c in self.output_cells:
             c.is_output_cell = True
 
-        self.mark_active()
-
 
     def last_value(self, cell_num):
         """
@@ -89,14 +87,16 @@ class CGP_program:
            Number of output cell with highest value.
         """
 
-        # store new inputs
+        # reset evaluated flag
+        for cell in self.cells:
+            cell.has_been_evaluated_this_iteration = False
+
         for i, input_cell in enumerate(self.input_cells):
+            # store new inputs
             input_cell.last_value = inputs[i]
 
-        # evaluate every cell that is not an input cell
-        for cell in self.cells[3:]:
-            if cell.active:
-                cell.evaluate()
+        for o_cell in self.output_cells:
+            o_cell.evaluate()
 
         # just get the index of the "ouput" which has the maximum value
         outputs = [o.last_value for o in self.output_cells]
@@ -104,34 +104,3 @@ class CGP_program:
         max_index = np.argmax(outputs)
 
         return max_index
-    
-
-    def mark_active(self):
-        """
-        Mark cells whose output isn't connected to the outputs as inactive
-        and the other cells as active.
-        """
-        queue = self.cells[-cc.N_OUTPUT_NODES:] #put outputs in queue
-        found = set(queue)
-
-        while queue != []:
-            curr = queue[0]
-            queue = queue[1:]
-
-            curr.active = True
-
-            i1, i2 = curr.inputs
-            
-            cell1 = self.cells[i1]
-            if not cell1 in found:
-                queue.append(cell1)
-                found.add(cell1)
-
-            cell2 = self.cells[i2]
-            if not cell2 in found:
-                queue.append(cell2)
-                found.add(cell2)
-
-            
-            
-            
