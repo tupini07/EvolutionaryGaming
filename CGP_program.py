@@ -62,7 +62,8 @@ class CGP_program:
         self.cells[2].last_value = inputs[2]
 
         for cell in self.cells[3:]:
-            cell.evaluate()
+            if cell.active:
+                cell.evaluate()
 
         outputs = self.cells[-16:]
 
@@ -76,3 +77,33 @@ class CGP_program:
 
         return max_index
     
+
+    def mark_active(self):
+        """
+        Mark cells whose output isn't connected to the outputs as inactive
+        and the other cells as active.
+        """
+        queue = self.cells[-16:] #put outputs in queue
+        found = set(queue)
+
+        while queue != []:
+            curr = queue[0]
+            queue = queue[1:]
+
+            curr.active = True
+
+            i1, i2 = curr.inputs
+            
+            cell1 = self.cells[i1]
+            if not cell1 in found:
+                queue.append(cell1)
+                found.add(cell1)
+
+            cell2 = self.cells[i2]
+            if not cell2 in found:
+                queue.append(cell2)
+                found.add(cell2)
+
+            
+            
+            

@@ -16,6 +16,8 @@ class CGP_cell:
         Function from function set used to calculate the output value.
     program : CGP_Program
         CGP program of which the cell is a part.
+    active : boolean
+        Marks cell as active.
     last_value : float or numpy.ndarray
         Value obtained in last function evaluation.
         Initialized as 0.
@@ -45,6 +47,8 @@ class CGP_cell:
         self.program = program
 
         self.last_value = 0
+
+        self.active = False
 
 
     def evaluate(self):
