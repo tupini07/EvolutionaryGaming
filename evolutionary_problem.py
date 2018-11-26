@@ -86,12 +86,19 @@ def evaluator(candidate: List, args: Dict, render=True) -> float:
     observation = env.reset()
     total_score = 0.0
 
+    #initialize random action for frame skip
+    action = env.action_space.sample()
+
     for _ in range(10_000):
 
         if render:
             env.render()
 
-        action = program.evaluate(np.transpose(observation, [2, 0, 1]))
+        #frame skip
+        skip = np.random.choice([True, False], p=[0.25,0.75])
+        
+        if not skip:
+            action = program.evaluate(np.transpose(observation, [2, 0, 1]))
 
         assert env.action_space.contains(
             action), "CGP suggested an illegal action: " + action + "\nAvailable actions are: " + env.action_space
