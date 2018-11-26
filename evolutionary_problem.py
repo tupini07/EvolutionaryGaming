@@ -126,12 +126,13 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
     # see `constants` module for mutation probabilities
 
     # TODO mutation should be done with different probabilities on output nodes and on inner nodes, so they need to be separated
+    # note that here we also need to take into account the probability of creating a recurrent connection
     output_nodes = candidate[-cc.N_OUTPUT_NODES:]
     inner_nodes = candidate[:-cc.N_OUTPUT_NODES]
 
     for f, _ in enumerate(candidate):
         candidate[f] += random.uniform(-0.01, 0.01)
-
+  
     bounder = args["_ec"].bounder
 
     return bounder(candidate, args)
