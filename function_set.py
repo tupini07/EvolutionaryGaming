@@ -2,6 +2,8 @@ import numpy as np
 import math
 import cv2
 
+# TODO: gaussian blur is currently removed. Performance is much worse with it enabled :o 
+# might be because the screen size is already very small? blurring 
 functions = ["add", "sinx", "lt"]#, "GaussianBlur"]
 
 
@@ -74,6 +76,7 @@ def sinx(inp1, inp2, parameter):
         Sin of first input value.
     """
 
+    # TODO: maybe this should return the same np.ndarray, but applying math.sin element-wise?
     if isinstance(inp1, np.ndarray):
         inp1 = np.mean(inp1)
         
@@ -103,6 +106,8 @@ def lt(inp1, inp2, parameter):
         Lesser of the two values.
     """
 
+    # TODO: maybe this should compare the matrices element-wise? And returns a matrix of the same
+    # size as the smaller of the 2 matrices 
     if isinstance(inp1, np.ndarray):
         inp1 = np.mean(inp1)
     if isinstance(inp2, np.ndarray):

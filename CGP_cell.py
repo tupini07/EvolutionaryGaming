@@ -74,7 +74,7 @@ class CGP_cell:
 
         # if it is an output cell then we have no function, so we just take the max input
         else:
-            # todo, all this business about getting the max of the inputs to an ouput node could be 
+            # TODO, all this business about getting the max of the inputs to an ouput node could be 
             # encapsulated somewhere
             final_outputs = [inp1, inp2]
 

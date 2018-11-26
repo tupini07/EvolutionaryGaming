@@ -82,13 +82,6 @@ def evaluator(candidate: List, args: Dict, render=True) -> float:
 
     program = CGP_program(cpg_genome)
 
-    # todo this is just a test input, need to connect with atari simulator.
-    # remember that the evaluation is done accross an entire game. So we evaluate and play the game until
-    # it ends, the final score is what we return from this function
-
-    # Note: that currently we're always getting 15 as the output. This is just because 15 is the "highest" action index
-    # and the program is maximizing
-
     env = gym.make(cc.ATARI_GAME)
     observation = env.reset()
     total_score = 0.0
@@ -105,8 +98,7 @@ def evaluator(candidate: List, args: Dict, render=True) -> float:
 
         observation, reward, done, info = env.step(action)
 
-        # todo: the award for time survived is just random
-        total_score += reward + 0.01 # score + award for time survived
+        total_score += reward 
 
         if done:
             break
@@ -126,7 +118,7 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
 
     # see `constants` module for mutation probabilities
 
-    # todo mutation should be done with different probabilities on output nodes and on inner nodes, so they need to be separated
+    # TODO mutation should be done with different probabilities on output nodes and on inner nodes, so they need to be separated
     output_nodes = candidate[-cc.N_OUTPUT_NODES:]
     inner_nodes = candidate[:-cc.N_OUTPUT_NODES]
 
