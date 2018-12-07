@@ -4,8 +4,7 @@ import cv2
 
 # TODO: gaussian blur is currently removed. Performance is much worse with it enabled :o 
 # might be because the screen size is already very small? blurring 
-#functions = ["add", "sinx", "lt"]#, "GaussianBlur"]
-functions_atari = ["add", "sinx", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2", "cpow1", "cpow2"]
+functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2", "cpow1", "cpow2", "ypow", "exp1", "exp2", "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2"]
 functions_openCV = ["GaussianBlur"]
 functions = functions_atari + functions_openCV
 
@@ -56,35 +55,6 @@ def add(inp1, inp2, parameter):
     else:
         added = inp1 + inp2
         return added
-
-
-def sinx(inp1, inp2, parameter):
-    """
-    Get sin of first input value.
-    If it is an array, the average of its values will be used.
-
-    Parameters
-    ----------
-    inp1 : float or np.ndarray
-        First input value.
-    inp2 : float or np.ndarray
-        Second input value.
-    parameter : float
-        Not actually used by this function.
-    
-    Return
-    ------
-    sin : float
-        Sin of first input value.
-    """
-
-    # TODO: maybe this should return the same np.ndarray, but applying math.sin element-wise?
-    if isinstance(inp1, np.ndarray):
-        inp1 = np.mean(inp1)
-        
-    sin = math.sin(inp1)
-
-    return sin
 
 
 def lt(inp1, inp2, parameter):
@@ -517,7 +487,7 @@ def sqrt2(inp1, inp2, parameter):
 
 def cpow1(inp1, inp2, parameter):
     """
-    Calculate inp1 to the power of parameter.
+    Calculate |inp1| to the power of parameter.
     If inp1 is a matrix, it is padded to be square.
     Parameter is converted to its absolute value before the operation.
     Function from Wilson et.al.
@@ -534,10 +504,11 @@ def cpow1(inp1, inp2, parameter):
     Return
     ------
     cpow1 : float or np.ndarray
-        Square root of inp1.
+        |inp1|^parameter.
     """
 
     parameter = abs(parameter)
+    inp1 = abs(inp1)
     
     if isinstance(inp1, np.ndarray):
         size = max(inp1.shape[0], inp1.shape[1])
@@ -552,7 +523,7 @@ def cpow1(inp1, inp2, parameter):
 
 def cpow2(inp1, inp2, parameter):
     """
-    Calculate inp2 to the power of parameter.
+    Calculate |inp2| to the power of parameter.
     If inp2 is a matrix, it is padded to be square.
     Parameter is converted to its absolute value before the operation.
     Function from Wilson et.al.
@@ -569,10 +540,11 @@ def cpow2(inp1, inp2, parameter):
     Return
     ------
     cpow2 : float or np.ndarray
-        Square root of inp2.
+        |inp2|^parameter.
     """
 
     parameter = abs(parameter)
+    inp2 = abs(inp2)
     
     if isinstance(inp2, np.ndarray):
         size = max(inp2.shape[0], inp2.shape[1])
@@ -584,3 +556,358 @@ def cpow2(inp1, inp2, parameter):
         cpow2 = inp1 ** parameter
 
     return cpow2
+
+
+def ypow(inp1, inp2, parameter):
+    """
+    Calculate |inp1|^|inp2|.
+    If inp2 is a matrix, its mean is taken beforehand.
+    If inp1 is a matrix, it is zero-padded to square form.
+    Function from Wilson et.al.
+
+    Parameters:
+    -----------
+    inp1 : float or np.ndarray
+        Base of exponentiation.
+    inp2 : float or np.ndarray
+        Exponent of exponentiation.
+    parameter : float
+        Not actually used by this function.
+        
+    Return
+    ------
+    ypow : float or np.ndarray
+        |inp1|^|inp2|
+    """
+
+    inp2 = abs(np.mean(inp2))
+
+    size = max(inp1.shape[0], inp1.shape[1])
+
+    padded = np.zeros((size,size))
+    padded[:inp1.shape[0], :inp1.shape[1]] = inp1
+
+    ypow = np.linalg.matrix_power(padded, inp2)
+
+    return ypow
+
+def exp1(inp1, inp2, parameter):
+    """
+    Calculate (e^inp1 - 1) / (e - 1).
+    If inp1 is an array, the operation is applied element-wise.
+    EXPX Function from Wilson et.al.
+
+    Parameters:
+    -----------
+    inp1 : float or np.ndarray
+        Base of exponentiation.
+    inp2 : float or np.ndarray
+        Exponent of exponentiation. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+        
+    Return
+    ------
+    exp1 : float
+        (e^inp1 - 1) / (e - 1)
+    """
+
+    exp1 = np.expm1(inp1)
+    exp1 = exp1 - 1
+    exp1 = exp1 / (np.exp(1) - 1)
+
+    return exp1
+
+def exp2(inp1, inp2, parameter):
+    """
+    Calculate (e^inp2 - 1) / (e - 1).
+    If inp2 is an array, the operation is applied element-wise.
+    EXPX Function from Wilson et.al.
+
+    Parameters:
+    -----------
+    inp1 : float or np.ndarray
+        Base of exponentiation. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Exponent of exponentiation.
+    parameter : float
+        Not actually used by this function.
+        
+    Return
+    ------
+    exp2 : float
+        (e^inp2 - 1) / (e - 1)
+    """
+
+    exp2 = np.expm1(inp1)
+    exp2 = exp2 - 1
+    exp2 = exp2 / (np.exp(1) - 1)
+
+    return exp2
+
+
+def sin1(inp1, inp2, parameter):
+    """
+    Get sin of first input value.
+    If it is an array, sine will be applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+    
+    Return
+    ------
+    sin : float
+        Sine of first input value.
+    """
+
+    sin = np.sin(inp1)
+
+    return sin
+
+
+def sin2(inp1, inp2, parameter):
+    """
+    Get sin of second input value.
+    If it is an array, sine will be applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+    
+    Return
+    ------
+    sin : float
+        Sine of second input value.
+    """
+
+    sin = np.sin(inp2)
+
+    return sin
+
+def sqrtxy(inp1, inp2, parameter):
+    """
+    Calculate sqrt(inp1^2 + inp2^2) / sqrt(2).
+    In case of an array the operation will be applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    sqrtxy : float or np.ndarray
+        sqrt(inp1^2 + inp2^2) / sqrt(2)
+    """
+
+    if isinstance(inp1, np.ndarray) and isinstance(inp2, np.ndarray):
+        sizex = max(inp1.shape[0], inp2.shape[0])
+        sizey = max(inp1.shape[1], inp2.shape[1])
+        size = max(sizex, sizey)
+
+        padded1 = np.zeros((size, size))
+        padded1[:inp1.shape[0], :inp1.shape[1]] = inp1
+
+        padded2 = np.zeros((size, size))
+        padded2[:inp2.shape[0], :inp2.shape[1]] = inp2
+
+        square1 = np.linalg.matrix_power(padded1, 2)
+        square2 = np.linalg.matrix_power(padded2, 2)
+
+    elif isinstance(inp1, np.ndarray) and isinstance(inp2, float):
+        size = max(inp1.shape[0], inp1.shape[1])
+
+        padded1 = np.zeros((size,size))
+        padded1[:inp1.shape[0], :inp1.shape[1]] = inp1
+
+        square1 = np.linalg.matrix_power(padded1, 2)
+        square2 = inp2 * inp2
+    
+    elif isinstance(inp1, float) and isinstance(inp2, np.ndarray):
+        size = max(inp2.shape[0], inp2.shape[1])
+
+        padded2 = np.zeros((size,size))
+        padded2[:inp2.shape[0], :inp2.shape[1]] = inp2
+
+        square1 = inp1 * inp1
+        square2 = np.linalg.matrix_power(padded2, 2)
+    else:
+        square1 = inp1 * inp1
+        square2 = inp2 * inp2
+        
+    sum_squares = square1 + square2
+    root = np.sqrt(sum_squares)
+
+    sqrtxy = root / np.sqrt(2)
+
+    return sqrtxy
+        
+
+def acos1(inp1, inp2, parameter):
+    """
+    Calculate arccos(inp1) / pi.
+    If inp1 is an array, the operation is applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    acos1 : float or np.ndarray
+        arccos(inp1) / pi
+    """
+
+    acos1 = np.arccos(inp1) / np.pi
+
+    return acos1
+
+
+def acos2(inp1, inp2, parameter):
+    """
+    Calculate arccos(inp2) / pi.
+    If inp2 is an array, the operation is applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    acos2 : float or np.ndarray
+        arccos(inp2) / pi
+    """
+
+    acos2 = np.arccos(inp2) / np.pi
+
+    return acos2
+
+def asin1(inp1, inp2, parameter):
+    """
+    Calculate 2 * arcsin(inp1) / pi.
+    If inp1 is an array, the operation is applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    asin1 : float or np.ndarray
+        2 * arcsin(inp1) / pi
+    """
+
+    asin1 = 2 * np.arcsin(inp1) / np.pi
+
+    return asin1
+
+def asin2(inp1, inp2, parameter):
+    """
+    Calculate 2 * arcsin(inp2) / pi.
+    If inp2 is an array, the operation is applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    asin2 : float or np.ndarray
+        2 * arcsin(inp2) / pi
+    """
+
+    asin2 = 2 * np.arcsin(inp2) / np.pi
+
+    return asin2
+
+def atan1(inp1, inp2, parameter):
+    """
+    Calculate 4 * arctan(inp1) / pi.
+    If inp1 is an array, the operation is applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    atan1 : float or np.ndarray
+        4 * arctan(inp1) / pi
+    """
+
+    atan1 = 4 * np.arctan(inp1) / np.pi
+
+    return atan1
+
+def atan2(inp1, inp2, parameter):
+    """
+    Calculate 4 * arctan(inp2) / pi.
+    If inp2 is an array, the operation is applied element-wise.
+    Function from Wilson et.al.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    atan2 : float or np.ndarray
+        4 * arctan(inp2) / pi
+    """
+
+    atan2 = 4 * np.arctan(inp2) / np.pi
+
+    return atan2
