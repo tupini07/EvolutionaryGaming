@@ -18,6 +18,9 @@ def test_functionset_accept_type():
     """
 
     for fname in fst.functions:
+        if fname.startswith("_"):
+            continue
+        
         func = getattr(fst, fname)
 
         test_matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])

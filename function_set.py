@@ -14,6 +14,8 @@ functions_openCV = ["GaussianBlur"]
 functions = functions_atari + functions_openCV
 
 
+
+
 def _is_matrix_matrix(inp1, inp2):
     return isinstance(inp1, np.ndarray) and isinstance(inp2, np.ndarray)
 
@@ -24,6 +26,15 @@ def _is_matrix_scalar(inp1, inp2):
 
 def _is_scalar_matrix(inp1, inp2):
     return isinstance(inp1, (int, float)) and isinstance(inp2, np.ndarray)
+
+def _pad_to_square(inp1):
+    size = max(inp1.shape[0], inp1.shape[1])
+
+    padded = np.zeros((size, size))
+    padded[:inp1.shape[0], :inp1.shape[1]] = inp1
+
+    return padded
+
 
 def _pad_matrices(inp1, inp2):
     """
@@ -530,11 +541,11 @@ def cpow1(inp1, inp2, parameter):
     inp1 = abs(inp1)
 
     if isinstance(inp1, np.ndarray):
-        size = max(inp1.shape[0], inp1.shape[1])
-        padded = np.zeros((size, size))
-        padded[:inp1.shape[0], :inp1.shape[1]] = inp1
 
-        cpow1 = np.linalg.matrix_power(padded, parameter)
+        padded = _pad_to_square(inp1)
+        exponent = int(round(parameter)) # exponent must be integer
+        cpow1 = np.linalg.matrix_power(padded, exponent)
+
     else:
         cpow1 = inp1 ** parameter
 
@@ -567,11 +578,11 @@ def cpow2(inp1, inp2, parameter):
     inp2 = abs(inp2)
 
     if isinstance(inp2, np.ndarray):
-        size = max(inp2.shape[0], inp2.shape[1])
-        padded = np.zeros((size, size))
-        padded[:inp2.shape[0], :inp2.shape[1]] = inp2
 
-        cpow2 = np.linalg.matrix_power(padded, parameter)
+        padded = _pad_to_square(inp2)
+        exponent = int(round(parameter)) # exponent must be integer
+        cpow2 = np.linalg.matrix_power(padded, exponent)
+
     else:
         cpow2 = inp1 ** parameter
 
@@ -600,16 +611,28 @@ def ypow(inp1, inp2, parameter):
         |inp1|^|inp2|
     """
 
-    inp2 = abs(np.mean(inp2))
+    if _is_matrix_matrix(inp1, inp2):
+        inp2 = int(round(abs(np.mean(inp2))))  # exponent must be integer
 
-    size = max(inp1.shape[0], inp1.shape[1])
+        padded = _pad_to_square(inp1)
+        ypow = np.linalg.matrix_power(padded, inp2)
 
-    padded = np.zeros((size, size))
-    padded[:inp1.shape[0], :inp1.shape[1]] = inp1
+    elif _is_matrix_scalar(inp1, inp2):
+        padded = _pad_to_square(inp1)
 
-    ypow = np.linalg.matrix_power(padded, inp2)
+        exponent = int(round(inp2))
+        ypow = np.linalg.matrix_power(padded, exponent)
+    
+    elif _is_scalar_matrix(inp1, inp2):
+        exponent = np.mean(inp2)
+        ypow = inp1 ** exponent
+    
+    else:
+        ypow = inp1 ** inp2
 
     return ypow
+
+
 
 
 def exp1(inp1, inp2, parameter):
