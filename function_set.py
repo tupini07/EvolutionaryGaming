@@ -1,14 +1,57 @@
 import numpy as np
 import math
 import cv2
+from functools import wraps
 
-# TODO: gaussian blur is currently removed. Performance is much worse with it enabled :o 
-# might be because the screen size is already very small? blurring 
-functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2", "cpow1", "cpow2", "ypow", "exp1", "exp2", "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2"]
+# TODO: gaussian blur is currently removed. Performance is much worse with it enabled 
+# might be because the screen size is already very small? blurring
+
+functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2",
+                   "cpow1", "cpow2", "ypow", "exp1", "exp2", "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2"]
+
 functions_openCV = ["GaussianBlur"]
+
 functions = functions_atari + functions_openCV
 
-def add(inp1, inp2, parameter):
+
+def _is_matrix_matrix(inp1, inp2):
+    return isinstance(inp1, np.ndarray) and isinstance(inp2, np.ndarray)
+
+
+def _is_matrix_scalar(inp1, inp2):
+    return isinstance(inp1, np.ndarray) and isinstance(inp2, (int, float))
+
+
+def _is_scalar_matrix(inp1, inp2):
+    return isinstance(inp1, (int, float)) and isinstance(inp2, np.ndarray)
+
+def _pad_matrices(inp1, inp2):
+    """
+    Pads matrices of different sizes to be the same size
+    
+    Parameters
+    ----------
+    inp1 : np.ndarray
+    inp2 : np.ndarray
+    
+    Returns
+    -------
+        [inp1, inp2]
+        resized to the same size, by padding the smaller dimensions
+    """
+    y_size = max(inp1.shape[1], inp2.shape[1])
+    x_size = max(inp1.shape[0], inp2.shape[0])
+
+    placeh1 = np.zeros([x_size, y_size])
+    placeh2 = np.zeros([x_size, y_size])
+
+    placeh1[:inp1.shape[0], :inp1.shape[1]] = inp1
+    placeh2[:inp2.shape[0], :inp2.shape[1]] = inp2
+
+    return placeh1, placeh2
+
+
+def add(inp1, inp2, parameter, combination_type=None):
     """
     Add to input values.
     If both inputs are arrays, a new array is created, 
@@ -32,26 +75,18 @@ def add(inp1, inp2, parameter):
     added : float or np.ndarray
         Sum of inputs.
     """
-    if isinstance(inp1, np.ndarray) and isinstance(inp2, np.ndarray):
-        #ugly hack for padding
-        
-        y_size = max(inp1.shape[1], inp2.shape[1])
-        x_size = max(inp1.shape[0], inp2.shape[0])
+    if _is_matrix_matrix(inp1, inp2):
 
-        placeh1 = np.zeros([x_size, y_size])
-        placeh2 = np.zeros([x_size, y_size])
+        # we pad
+        m1, m2 = _pad_matrices(inp1, inp2) 
+        return m1 + m2
 
-        placeh1[:inp1.shape[0], :inp1.shape[1]] = inp1
-        placeh2[:inp2.shape[0], :inp2.shape[1]] = inp2
-
-        return placeh1 + placeh2
-        
-    elif isinstance(inp1, np.ndarray) and isinstance(inp2, (int, float)):
+    elif _is_matrix_scalar(inp1, inp2):
         return np.average(inp1) + inp2
-        
-    elif isinstance(inp1, (int, float)) and isinstance(inp2, np.ndarray):
+
+    elif _is_scalar_matrix(inp1, inp2):
         return inp1 + np.average(inp2)
-        
+
     else:
         added = inp1 + inp2
         return added
@@ -79,15 +114,15 @@ def lt(inp1, inp2, parameter):
     """
 
     # TODO: maybe this should compare the matrices element-wise? And returns a matrix of the same
-    # size as the smaller of the 2 matrices 
-    if isinstance(inp1, np.ndarray):
-        inp1 = np.mean(inp1)
-    if isinstance(inp2, np.ndarray):
-        inp2 = np.mean(inp2)
+    # size as the smaller of the 2 matrices
+    if _is_matrix_matrix(inp1, inp2):
+        m1, m2 = _pad_matrices(inp1, inp2)
+        return m1 < m2
 
-    lesser = min(inp1, inp2)
+    else: # either matrix scalar, or viceversa, or scalar scalar
+        return inp1 < inp2
+    
 
-    return lesser
 
 def GaussianBlur(inp1, inp2, parameter):
     """
@@ -101,7 +136,7 @@ def GaussianBlur(inp1, inp2, parameter):
         Second input value.
     parameter : float
         Used to determne kernel size.
-    
+
     Return
     ------
     blurred : np.ndarray
@@ -118,7 +153,7 @@ def GaussianBlur(inp1, inp2, parameter):
     if ksizey % 2 == 0:
         ksizey += 1
 
-    blurred = cv2.GaussianBlur(inp1, (ksizex,ksizey), 0, sigmaY=0)
+    blurred = cv2.GaussianBlur(inp1, (ksizex, ksizey), 0, sigmaY=0)
 
     return blurred
 
@@ -149,6 +184,7 @@ def average(inp1, inp2, parameter):
 
     return avg
 
+
 def aminus(inp1, inp2, parameter):
     """
     Calculates |inp1 - inp2|/2.
@@ -168,19 +204,11 @@ def aminus(inp1, inp2, parameter):
     avg : float or np.ndarray
         |inp1 - inp2|/2
     """
-    abs_list = lambda l: list(map(abs, l))
+    def abs_list(l): return list(map(abs, l))
 
-    if isinstance(inp1, np.ndarray) and isinstance(inp2, np.ndarray):
-        #ugly hack for padding
-        
-        y_size = max(inp1.shape[1], inp2.shape[1])
-        x_size = max(inp1.shape[0], inp2.shape[0])
+    if _is_matrix_matrix(inp1, inp2):
 
-        placeh1 = np.zeros([x_size, y_size])
-        placeh2 = np.zeros([x_size, y_size])
-
-        placeh1[:inp1.shape[0], :inp1.shape[1]] = inp1
-        placeh2[:inp2.shape[0], :inp2.shape[1]] = inp2
+        placeh1, placeh2 = _pad_matrices(inp1, inp2)
 
         diff = placeh1 - placeh2
         abs_arr = np.apply_along_axis(abs_list, 0, diff)
@@ -188,8 +216,8 @@ def aminus(inp1, inp2, parameter):
         avg = abs_arr / 2
 
         return avg
-        
-    elif isinstance(inp1, np.ndarray) and isinstance(inp2, (int, float)):
+
+    elif _is_matrix_scalar(inp1, inp2):
         asmatrix2 = np.full(inp1.shape, inp2)
         diff = inp1 - asmatrix2
         abs_arr = np.apply_along_axis(abs_list, 0, diff)
@@ -197,8 +225,8 @@ def aminus(inp1, inp2, parameter):
         avg = abs_arr / 2
 
         return avg
-        
-    elif isinstance(inp1, (int, float)) and isinstance(inp2, np.ndarray):
+
+    elif _is_scalar_matrix(inp1, inp2):
         asmatrix1 = np.full(inp2.shape, inp1)
         diff = asmatrix1 - inp2
         abs_arr = np.apply_along_axis(abs_list, 0, diff)
@@ -206,10 +234,10 @@ def aminus(inp1, inp2, parameter):
         avg = abs_arr / 2
 
         return avg
-        
+
     else:
         return abs(inp1 - inp2) / 2
-    
+
 
 def mult(inp1, inp2, parameter):
     """
@@ -231,26 +259,14 @@ def mult(inp1, inp2, parameter):
         inp1 * inp2
     """
 
-    if isinstance(inp1, np.ndarray) and isinstance(inp2, np.ndarray):
-        #ugly hack for padding
-        
-        y_size = max(inp1.shape[1], inp2.shape[1])
-        x_size = max(inp1.shape[0], inp2.shape[0])
+    if _is_matrix_matrix(inp1, inp2):
+        m1, m2 = _pad_matrices(inp1, inp2)
 
-        placeh1 = np.zeros([x_size, y_size])
-        placeh2 = np.zeros([x_size, y_size])
-
-        placeh1[:inp1.shape[0], :inp1.shape[1]] = inp1
-        placeh2[:inp2.shape[0], :inp2.shape[1]] = inp2
-
-        prod = placeh1 * placeh2
-
-        return prod
+        return m1 * m2
 
     else:
-        prod = inp1 * inp2
+        return inp1 * inp2
 
-        return prod
 
 def cmult1(inp1, inp2, parameter):
     """
@@ -274,7 +290,8 @@ def cmult1(inp1, inp2, parameter):
     prod = inp1 * parameter
 
     return prod
-    
+
+
 def cmult2(inp1, inp2, parameter):
     """
     Multiply inp2 by parameter.
@@ -297,6 +314,7 @@ def cmult2(inp1, inp2, parameter):
     prod = inp2 * parameter
 
     return prod
+
 
 def inv1(inp1, inp2, parameter):
     """
@@ -323,20 +341,20 @@ def inv1(inp1, inp2, parameter):
 
     if isinstance(inp1, np.ndarray):
         size = max(inp1.shape[0], inp1.shape[1])
-        padded = np.zeros((size,size))
+        padded = np.zeros((size, size))
         padded[:inp1.shape[0], :inp1.shape[1]] = inp1
 
         try:
             inv = np.linalg.inv(inp1)
             return inv
-        except numpy.linalg.LinAlgError:
+        except np.linalg.LinAlgError:
             return inp1
     else:
         inv = 1 / inp1
 
         return inv
 
-    
+
 def inv2(inp1, inp2, parameter):
     """
     Calculate inverse of inp2.
@@ -362,13 +380,13 @@ def inv2(inp1, inp2, parameter):
 
     if isinstance(inp2, np.ndarray):
         size = max(inp2.shape[0], inp2.shape[1])
-        padded = np.zeros((size,size))
+        padded = np.zeros((size, size))
         padded[:inp2.shape[0], :inp2.shape[1]] = inp2
 
         try:
             inv = np.linalg.inv(inp2)
             return inv
-        except numpy.linalg.LinAlgError:
+        except np.linalg.LinAlgError:
             return inp2
     else:
         inv = 1 / inp2
@@ -402,7 +420,6 @@ def abs1(inp1, inp2, parameter):
     return abs1
 
 
-
 def abs2(inp1, inp2, parameter):
     """
     Return absolute value of inp2.
@@ -427,6 +444,7 @@ def abs2(inp1, inp2, parameter):
     abs2 = abs(inp2)
 
     return abs2
+
 
 def sqrt1(inp1, inp2, parameter):
     """
@@ -455,6 +473,7 @@ def sqrt1(inp1, inp2, parameter):
     sqrt1 = np.sqrt(abs1)
 
     return sqrt1
+
 
 def sqrt2(inp1, inp2, parameter):
     """
@@ -509,10 +528,10 @@ def cpow1(inp1, inp2, parameter):
 
     parameter = abs(parameter)
     inp1 = abs(inp1)
-    
+
     if isinstance(inp1, np.ndarray):
         size = max(inp1.shape[0], inp1.shape[1])
-        padded = np.zeros((size,size))
+        padded = np.zeros((size, size))
         padded[:inp1.shape[0], :inp1.shape[1]] = inp1
 
         cpow1 = np.linalg.matrix_power(padded, parameter)
@@ -520,6 +539,7 @@ def cpow1(inp1, inp2, parameter):
         cpow1 = inp1 ** parameter
 
     return cpow1
+
 
 def cpow2(inp1, inp2, parameter):
     """
@@ -545,10 +565,10 @@ def cpow2(inp1, inp2, parameter):
 
     parameter = abs(parameter)
     inp2 = abs(inp2)
-    
+
     if isinstance(inp2, np.ndarray):
         size = max(inp2.shape[0], inp2.shape[1])
-        padded = np.zeros((size,size))
+        padded = np.zeros((size, size))
         padded[:inp2.shape[0], :inp2.shape[1]] = inp2
 
         cpow2 = np.linalg.matrix_power(padded, parameter)
@@ -573,7 +593,7 @@ def ypow(inp1, inp2, parameter):
         Exponent of exponentiation.
     parameter : float
         Not actually used by this function.
-        
+
     Return
     ------
     ypow : float or np.ndarray
@@ -584,12 +604,13 @@ def ypow(inp1, inp2, parameter):
 
     size = max(inp1.shape[0], inp1.shape[1])
 
-    padded = np.zeros((size,size))
+    padded = np.zeros((size, size))
     padded[:inp1.shape[0], :inp1.shape[1]] = inp1
 
     ypow = np.linalg.matrix_power(padded, inp2)
 
     return ypow
+
 
 def exp1(inp1, inp2, parameter):
     """
@@ -605,7 +626,7 @@ def exp1(inp1, inp2, parameter):
         Exponent of exponentiation. Not actually used by this function.
     parameter : float
         Not actually used by this function.
-        
+
     Return
     ------
     exp1 : float
@@ -617,6 +638,7 @@ def exp1(inp1, inp2, parameter):
     exp1 = exp1 / (np.exp(1) - 1)
 
     return exp1
+
 
 def exp2(inp1, inp2, parameter):
     """
@@ -632,7 +654,7 @@ def exp2(inp1, inp2, parameter):
         Exponent of exponentiation.
     parameter : float
         Not actually used by this function.
-        
+
     Return
     ------
     exp2 : float
@@ -660,7 +682,7 @@ def sin1(inp1, inp2, parameter):
         Second input value. Not actually used by this function.
     parameter : float
         Not actually used by this function.
-    
+
     Return
     ------
     sin : float
@@ -686,7 +708,7 @@ def sin2(inp1, inp2, parameter):
         Second input value.
     parameter : float
         Not actually used by this function.
-    
+
     Return
     ------
     sin : float
@@ -696,6 +718,7 @@ def sin2(inp1, inp2, parameter):
     sin = np.sin(inp2)
 
     return sin
+
 
 def sqrtxy(inp1, inp2, parameter):
     """
@@ -718,33 +741,25 @@ def sqrtxy(inp1, inp2, parameter):
         sqrt(inp1^2 + inp2^2) / sqrt(2)
     """
 
-    if isinstance(inp1, np.ndarray) and isinstance(inp2, np.ndarray):
-        sizex = max(inp1.shape[0], inp2.shape[0])
-        sizey = max(inp1.shape[1], inp2.shape[1])
-        size = max(sizex, sizey)
+    if _is_matrix_matrix(inp1, inp2):
+        m1, m2 = _pad_matrices(inp1, inp2)
 
-        padded1 = np.zeros((size, size))
-        padded1[:inp1.shape[0], :inp1.shape[1]] = inp1
-
-        padded2 = np.zeros((size, size))
-        padded2[:inp2.shape[0], :inp2.shape[1]] = inp2
-
-        square1 = np.linalg.matrix_power(padded1, 2)
-        square2 = np.linalg.matrix_power(padded2, 2)
+        square1 = np.linalg.matrix_power(m1, 2)
+        square2 = np.linalg.matrix_power(m2, 2)
 
     elif isinstance(inp1, np.ndarray) and isinstance(inp2, float):
         size = max(inp1.shape[0], inp1.shape[1])
 
-        padded1 = np.zeros((size,size))
+        padded1 = np.zeros((size, size))
         padded1[:inp1.shape[0], :inp1.shape[1]] = inp1
 
         square1 = np.linalg.matrix_power(padded1, 2)
         square2 = inp2 * inp2
-    
+
     elif isinstance(inp1, float) and isinstance(inp2, np.ndarray):
         size = max(inp2.shape[0], inp2.shape[1])
 
-        padded2 = np.zeros((size,size))
+        padded2 = np.zeros((size, size))
         padded2[:inp2.shape[0], :inp2.shape[1]] = inp2
 
         square1 = inp1 * inp1
@@ -752,14 +767,14 @@ def sqrtxy(inp1, inp2, parameter):
     else:
         square1 = inp1 * inp1
         square2 = inp2 * inp2
-        
+
     sum_squares = square1 + square2
     root = np.sqrt(sum_squares)
 
     sqrtxy = root / np.sqrt(2)
 
     return sqrtxy
-        
+
 
 def acos1(inp1, inp2, parameter):
     """
@@ -812,6 +827,7 @@ def acos2(inp1, inp2, parameter):
 
     return acos2
 
+
 def asin1(inp1, inp2, parameter):
     """
     Calculate 2 * arcsin(inp1) / pi.
@@ -836,6 +852,7 @@ def asin1(inp1, inp2, parameter):
     asin1 = 2 * np.arcsin(inp1) / np.pi
 
     return asin1
+
 
 def asin2(inp1, inp2, parameter):
     """
@@ -862,6 +879,7 @@ def asin2(inp1, inp2, parameter):
 
     return asin2
 
+
 def atan1(inp1, inp2, parameter):
     """
     Calculate 4 * arctan(inp1) / pi.
@@ -886,6 +904,7 @@ def atan1(inp1, inp2, parameter):
     atan1 = 4 * np.arctan(inp1) / np.pi
 
     return atan1
+
 
 def atan2(inp1, inp2, parameter):
     """
