@@ -1,6 +1,6 @@
 import numpy as np
 import constants as cc
-from CGP_cell import CGP_cell
+from CGP_cell import CGP_cell, Output_cell
 
 
 class CGP_program:
@@ -25,17 +25,16 @@ class CGP_program:
         self.cells = []
         self.num_cells = len(genome)
 
-        for cell_genome in genome:
+        for cell_genome in genome[:-cc.N_OUTPUT_NODES]:
             cell = CGP_cell(cell_genome, self)
+            self.cells.append(cell)
+        for cell_genome in genome[-cc.N_OUTPUT_NODES:]:
+            cell = Output_cell(cell_genome, self)
             self.cells.append(cell)
 
         self.input_cells = self.cells[:3]
-        for c in self.input_cells: # if we specify the output and input cells as different classes then this can be removed
-            c.is_input_cell = True
 
         self.output_cells = self.cells[-cc.N_OUTPUT_NODES:]
-        for c in self.output_cells:
-            c.is_output_cell = True
 
         self.mark_active()
 
