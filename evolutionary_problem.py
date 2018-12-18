@@ -56,6 +56,11 @@ def crossover(random: random.Random, mom: List, dad: List, args: Dict) -> List[L
 
     # using crossover from paper: A New Crossover Technique for Cartesian Genetic Programming
 
+    # TODO: check that crossover is not being performed for all individuals in population every generation. Current crossover method is 
+    # a bit too disruptive. Maybe around 20% of population would be ok? In inspyred, the crossover methods use the following to regulate
+    # the probability of crossover:
+    #           if random.random() < crossover_rate: do crossover
+
     bounder = args["_ec"].bounder
 
     def gen_offspring():
