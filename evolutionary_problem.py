@@ -45,11 +45,14 @@ def generator(random: random.Random, args: Dict) -> List:
 def observer(population, num_generations, num_evaluations, args):
     best = max(population)
     print(f"GEN: {num_generations} \t Best fitness: {best.fitness}")
+    print("Fitnesses of complete population:")
+    for p in sorted(population, key=lambda x: x.fitness):
+        print("\t" + str(p.fitness))
+    print()
+
 
 @ec.evaluators.evaluator
 def evaluator(candidate: List, args: Dict, render=True) -> float:
-    # not implemented yet, but the flow will be something like this
-    # note that this operates on one candidate at a time
 
     # the [0] *3*4 represent the genome for the input cells
     candidate = ([0]*3*4) + candidate
@@ -62,20 +65,19 @@ def evaluator(candidate: List, args: Dict, render=True) -> float:
     observation = env.reset()
     total_score = 0.0
 
-    # initialize random action for frame skip
-    action = env.action_space.sample()
-
     for _ in range(10_000):
 
         if render:
             env.render()
+
+        action = program.evaluate(np.transpose(observation, [2, 0, 1]))
 
         assert env.action_space.contains(
             action), "CGP suggested an illegal action: " + action + "\nAvailable actions are: " + env.action_space
 
         observation, reward, done, info = env.step(action)
 
-        total_score += reward
+        total_score += reward 
 
         if done:
             break
@@ -142,7 +144,7 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
 
         for i_n in indices_to_mutate:
             st[i_n*4:i_n*4+4] = [random.uniform(0.0, 1.0) for _ in range(4)]
-            
+
         return st
 
     

@@ -25,17 +25,17 @@ class CGP_program:
         self.cells = []
         self.num_cells = len(genome)
 
-        for cell_genome in genome[:-cc.N_OUTPUT_NODES*4]:
+        for cell_genome in genome[:-cc.N_OUTPUT_NODES]:
             cell = CGP_cell(cell_genome, self)
             self.cells.append(cell)
             
-        for cell_genome in genome[-cc.N_OUTPUT_NODES*4:]:
+        for cell_genome in genome[-cc.N_OUTPUT_NODES:]:
             cell = Output_cell(cell_genome, self)
             self.cells.append(cell)
 
         self.input_cells = self.cells[:3]
 
-        self.output_cells = self.cells[-cc.N_OUTPUT_NODES*4:]
+        self.output_cells = self.cells[-cc.N_OUTPUT_NODES:]
 
         self.mark_active()
 
@@ -100,7 +100,7 @@ class CGP_program:
 
         # just get the index of the "ouput" which has the maximum value
         outputs = [o.last_value for o in self.output_cells]
-
+        print(len(outputs))
         max_index = np.argmax(outputs)
 
         return max_index

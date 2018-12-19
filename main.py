@@ -31,7 +31,7 @@ def main(prng=None, display=False):
                           pop_size=9, 
                           bounder=problem.bounder,
                           maximize=problem.maximize,
-                          tournament_size=2,
+                          tournament_size=3,
                           max_generations=120,
                           crossover_rate=0.2,
                           mutation_rate=0.7)  # we need to control mutation manually with m_probs in constants
