@@ -44,7 +44,8 @@ class CGP_cell:
         func_name = function_set.functions[func_pos]
         self.function = getattr(function_set, func_name)
 
-        self.parameter = genome[3]
+        # parameter should be scaled to [-1, 1]
+        self.parameter = 2 * genome[3] - 1
 
         self.program = program
 
