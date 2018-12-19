@@ -1059,3 +1059,98 @@ def min2(inp1, inp2, parameter):
         inp1, inp2 = _pad_matrices(inp1, inp2)
 
     return np.minimum(inp1, inp2)
+
+############
+
+
+def split_before(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        idx_p = (parameter + 1) / 2
+        split_point = int(round(len(inp1) * idx_p))
+
+        return inp1[:split_point]
+
+    else:
+        return inp1
+
+
+def split_after(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        idx_p = (parameter + 1) / 2
+        split_point = int(round(len(inp1) * idx_p))
+
+        return inp1[split_point:]
+
+    else:
+        return inp1
+
+
+def range_in(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        if isinstance(inp2, np.ndarray):
+            inp2 = inp2.mean()
+
+        inp2 = np.clip(inp2, -1, 1)
+        
+        right_p = max(inp2, parameter) + 1 / 2
+        left_p = min(inp2, parameter) + 1 / 2
+
+        split_right = int(round(len(inp1) * right_p))
+        split_left = int(round(len(inp1) * left_p))
+
+        return inp1[split_left:split_right]
+
+    else:
+        return inp1
+
+
+def index_y(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        if isinstance(inp2, np.ndarray):
+            inp2 = inp2.mean()
+
+        inp2 = np.clip(inp2, -1, 1)
+
+        i_p = inp2 + 1 / 2
+        split_point = int(round(len(inp1) * i_p))
+
+        return inp1[split_point]
+
+    else:
+        return inp1
+
+
+def index_p(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        idx_p = (parameter + 1) / 2
+        split_point = int(round(len(inp1) * idx_p))
+
+        return inp1[split_point]
+
+    else:
+        return inp1
+
+
+def vectorize(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1.flatten()
+
+    else:
+        return inp1
+
+def first(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1[0]
+
+    else:
+        return inp1
+
+def last(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1[-1]
+
+    else:
+        return inp1
+
+# TODO: differences -> computational derivative of 1D vector of inp1
+

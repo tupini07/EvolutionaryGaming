@@ -34,7 +34,7 @@ def main(prng=None, display=False):
                           tournament_size=3,
                           max_generations=120,
                           crossover_rate=0.2,
-                          mutation_rate=0.7)  # we need to control mutation manually with m_probs in constants
+                          mutation_rate=0.7)  
 
     if display:
         best = max(final_pop)

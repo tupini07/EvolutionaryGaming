@@ -35,6 +35,10 @@ def test_functionset_accept_type():
 
         for t_inp1, t_inp2 in tests:
             try:
-                func(t_inp1, t_inp2, test_parameter)
+                res = func(t_inp1, t_inp2, test_parameter)
+                
+                if res is None:
+                    pytest.fail(f"it seems that function {fname} does not return a value.")
+                    
             except Exception:
                 pytest.fail(f"Function '{fname}' seems to fail when the inputs are ({type(t_inp1)}, {type(t_inp2)})")
