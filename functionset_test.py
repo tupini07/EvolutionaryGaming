@@ -30,7 +30,8 @@ def test_functionset_accept_type():
         tests = [[test_matrix, test_matrix],
                  [test_scalar, test_matrix],
                  [test_matrix, test_scalar],
-                 [test_scalar, test_scalar]]
+                 [test_scalar, test_scalar], 
+                 [0,0]]
 
         for t_inp1, t_inp2 in tests:
             try:

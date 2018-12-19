@@ -10,7 +10,7 @@ functions_openCV = ["GaussianBlur"]
 
 functions = functions_atari + functions_openCV
 
-
+np.seterr(all="raise")
 
 
 def _is_matrix_matrix(inp1, inp2):
@@ -356,7 +356,7 @@ def inv1(inp1, inp2, parameter):
         except np.linalg.LinAlgError:
             return inp1
     else:
-        inv = 1 / inp1
+        inv = 1 / inp1 if inp1 != 0 else 0
 
         return inv
 
@@ -395,7 +395,7 @@ def inv2(inp1, inp2, parameter):
         except np.linalg.LinAlgError:
             return inp2
     else:
-        inv = 1 / inp2
+        inv = 1 / inp2 if inp2 != 0 else 0
 
         return inv
 
@@ -579,7 +579,7 @@ def cpow2(inp1, inp2, parameter):
         cpow2 = np.linalg.matrix_power(padded, exponent)
 
     else:
-        cpow2 = inp1 ** parameter
+        cpow2 = inp2 ** parameter
 
     return cpow2
 

@@ -61,7 +61,14 @@ class CGP_cell:
         inp1 = self.program.get_cell(self.inputs[0]).last_value
         inp2 = self.program.get_cell(self.inputs[1]).last_value
 
-        self.last_value = self.function(inp1, inp2, self.parameter)
+
+        res = self.function(inp1, inp2, self.parameter)
+
+        # if result is either NaN or Inf then just set last value to 0
+        if res == float("NaN") or res == float("Inf"):
+            self.last_value = 0
+        else:
+            self.last_value = res
 
 
 
