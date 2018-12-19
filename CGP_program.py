@@ -25,16 +25,17 @@ class CGP_program:
         self.cells = []
         self.num_cells = len(genome)
 
-        for cell_genome in genome[:-cc.N_OUTPUT_NODES]:
+        for cell_genome in genome[:-cc.N_OUTPUT_NODES*4]:
             cell = CGP_cell(cell_genome, self)
             self.cells.append(cell)
-        for cell_genome in genome[-cc.N_OUTPUT_NODES:]:
+            
+        for cell_genome in genome[-cc.N_OUTPUT_NODES*4:]:
             cell = Output_cell(cell_genome, self)
             self.cells.append(cell)
 
         self.input_cells = self.cells[:3]
 
-        self.output_cells = self.cells[-cc.N_OUTPUT_NODES:]
+        self.output_cells = self.cells[-cc.N_OUTPUT_NODES*4:]
 
         self.mark_active()
 

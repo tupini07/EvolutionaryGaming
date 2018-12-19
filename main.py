@@ -28,13 +28,13 @@ def main(prng=None, display=False):
 
     final_pop = ea.evolve(generator=problem.generator,
                           evaluator=problem.evaluator,
-                          pop_size=cc.POPULATION_SIZE,
+                          pop_size=9, 
                           bounder=problem.bounder,
                           maximize=problem.maximize,
                           tournament_size=2,
                           max_generations=120,
                           crossover_rate=0.2,
-                          mutation_rate=1.0)  # we need to control mutation manually with m_probs in constants
+                          mutation_rate=0.7)  # we need to control mutation manually with m_probs in constants
 
     if display:
         best = max(final_pop)
