@@ -3,9 +3,6 @@ import math
 import cv2
 from functools import wraps
 
-# TODO: gaussian blur is currently removed. Performance is much worse with it enabled 
-# might be because the screen size is already very small? blurring
-
 functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2",
                    "cpow1", "cpow2", "ypow", "exp1", "exp2", "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2"]
 
@@ -124,8 +121,6 @@ def lt(inp1, inp2, parameter):
         Lesser of the two values.
     """
 
-    # TODO: maybe this should compare the matrices element-wise? And returns a matrix of the same
-    # size as the smaller of the 2 matrices
     if _is_matrix_matrix(inp1, inp2):
         m1, m2 = _pad_matrices(inp1, inp2)
         return m1 < m2
