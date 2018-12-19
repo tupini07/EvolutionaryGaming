@@ -46,7 +46,7 @@ def observer(population, num_generations, num_evaluations, args):
     best = max(population)
     print(f"GEN: {num_generations} \t Best fitness: {best.fitness}")
     print("Fitnesses of complete population:")
-    for p in sorted(population, key=lambda x: x.fitness):
+    for p in sorted(population, key=lambda x: x.fitness, reverse=True):
         print("\t" + str(p.fitness))
     print()
 

@@ -52,7 +52,6 @@ class CGP_cell:
 
         self.active = False
 
-
     def evaluate(self):
         """
         Evaluates the function of the cell using the inputs and the parameter.
@@ -61,15 +60,8 @@ class CGP_cell:
         inp1 = self.program.get_cell(self.inputs[0]).last_value
         inp2 = self.program.get_cell(self.inputs[1]).last_value
 
-
-        res = self.function(inp1, inp2, self.parameter)
-
-        # if result is either NaN or Inf then just set last value to 0
-        if res == float("NaN") or res == float("Inf"):
-            self.last_value = 0
-        else:
-            self.last_value = res
-
+        self.last_value = np.nan_to_num(
+            self.function(inp1, inp2, self.parameter))
 
 
 class Output_cell(CGP_cell):
@@ -115,7 +107,7 @@ class Output_cell(CGP_cell):
             if not isinstance(fo, list):
                 input_values[i] = [fo]
 
-        ## get the average value of the lists, this will be the final value of the inputs
+        # get the average value of the lists, this will be the final value of the inputs
         input_values = [np.average(ip) for ip in input_values]
 
         self.last_value = sum(input_values)

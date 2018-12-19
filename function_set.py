@@ -1,16 +1,24 @@
-import numpy as np
 import math
-import cv2
+######
+import types
 from functools import wraps
 
-functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2",
-                   "cpow1", "cpow2", "ypow", "exp1", "exp2", "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2"]
+import numpy as np
+import scipy
+import scipy.stats
+
+import cv2
+
+functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2", "cpow1", "cpow2", "ypow", "exp1", "exp2",
+                   "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2", "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1", "max2", "min2"]
+
 
 functions_openCV = ["GaussianBlur"]
 
 functions = functions_atari + functions_openCV
 
-np.seterr(all="raise")
+
+# np.seterr(all="raise")
 
 
 def _is_matrix_matrix(inp1, inp2):
@@ -24,6 +32,7 @@ def _is_matrix_scalar(inp1, inp2):
 def _is_scalar_matrix(inp1, inp2):
     return isinstance(inp1, (int, float)) and isinstance(inp2, np.ndarray)
 
+
 def _pad_to_square(inp1):
     size = max(inp1.shape[0], inp1.shape[1])
 
@@ -36,12 +45,12 @@ def _pad_to_square(inp1):
 def _pad_matrices(inp1, inp2):
     """
     Pads matrices of different sizes to be the same size
-    
+
     Parameters
     ----------
     inp1 : np.ndarray
     inp2 : np.ndarray
-    
+
     Returns
     -------
         [inp1, inp2]
@@ -86,7 +95,7 @@ def add(inp1, inp2, parameter, combination_type=None):
     if _is_matrix_matrix(inp1, inp2):
 
         # we pad
-        m1, m2 = _pad_matrices(inp1, inp2) 
+        m1, m2 = _pad_matrices(inp1, inp2)
         return m1 + m2
 
     elif _is_matrix_scalar(inp1, inp2):
@@ -125,9 +134,8 @@ def lt(inp1, inp2, parameter):
         m1, m2 = _pad_matrices(inp1, inp2)
         return m1 < m2
 
-    else: # either matrix scalar, or viceversa, or scalar scalar
+    else:  # either matrix scalar, or viceversa, or scalar scalar
         return inp1 < inp2
-    
 
 
 def GaussianBlur(inp1, inp2, parameter):
@@ -538,7 +546,7 @@ def cpow1(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
 
         padded = _pad_to_square(inp1)
-        exponent = int(round(parameter)) # exponent must be integer
+        exponent = int(round(parameter))  # exponent must be integer
         cpow1 = np.linalg.matrix_power(padded, exponent)
 
     else:
@@ -575,7 +583,7 @@ def cpow2(inp1, inp2, parameter):
     if isinstance(inp2, np.ndarray):
 
         padded = _pad_to_square(inp2)
-        exponent = int(round(parameter)) # exponent must be integer
+        exponent = int(round(parameter))  # exponent must be integer
         cpow2 = np.linalg.matrix_power(padded, exponent)
 
     else:
@@ -617,17 +625,15 @@ def ypow(inp1, inp2, parameter):
 
         exponent = int(round(inp2))
         ypow = np.linalg.matrix_power(padded, exponent)
-    
+
     elif _is_scalar_matrix(inp1, inp2):
         exponent = np.mean(inp2)
         ypow = inp1 ** exponent
-    
+
     else:
         ypow = inp1 ** inp2
 
     return ypow
-
-
 
 
 def exp1(inp1, inp2, parameter):
@@ -948,3 +954,108 @@ def atan2(inp1, inp2, parameter):
     atan2 = 4 * np.arctan(inp2) / np.pi
 
     return atan2
+
+
+def stddev(inp1, inp2, parameter):
+    """
+    calculate the standard deviation of `inp1`
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+        stddev: float
+            The standard deviation of the matrix inp1 if it is a matrix, 
+            else it just returns the number (int or float)    
+    """
+
+    if isinstance(inp1, np.ndarray):
+        return inp1.std()
+
+    else:
+        return inp1
+
+
+def skew(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return scipy.stats.skew(inp1)
+
+    else:
+        return inp1
+
+
+def kurtosis(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return scipy.stats.kurtosis(inp1)
+
+    else:
+        return inp1
+
+
+def mean(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1.mean()
+
+    else:
+        return inp1
+
+
+def range(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1.max() - inp1.min() - 1
+
+    else:
+        return inp1
+
+
+def round_st(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1.round()
+
+    else:
+        return round(inp1)
+
+
+def ceil(inp1, inp2, parameter):
+    return np.ceil(inp1)
+
+
+def floor(inp1, inp2, parameter):
+    return np.floor(inp1)
+
+
+def max1(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1.max()
+
+    else:
+        return inp1
+
+
+def min1(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return inp1.min()
+
+    else:
+        return inp1
+
+
+def max2(inp1, inp2, parameter):
+    if _is_matrix_matrix(inp1, inp2):
+        inp1, inp2 = _pad_matrices(inp1, inp2)
+
+    return np.maximum(inp1, inp2)
+
+
+def min2(inp1, inp2, parameter):
+    if _is_matrix_matrix(inp1, inp2):
+        inp1, inp2 = _pad_matrices(inp1, inp2)
+
+    return np.minimum(inp1, inp2)
