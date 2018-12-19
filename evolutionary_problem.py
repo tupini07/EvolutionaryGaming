@@ -105,7 +105,6 @@ def crossover(random: random.Random, mom: List, dad: List, args: Dict) -> List[L
         p1 = [iri * g for g in mom]
         p2 = [ri * g for g in dad]
 
-        print(len(p1), " -- ", len(p2))
         return bounder([p1[i] + p2[i] for i in range(len(mom))], args)
 
     if random.random() < args["crossover_rate"]:
