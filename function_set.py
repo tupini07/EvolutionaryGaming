@@ -1060,7 +1060,7 @@ def min2(inp1, inp2, parameter):
 
     return np.minimum(inp1, inp2)
 
-############
+# need to add below to functionset
 
 
 def split_before(inp1, inp2, parameter):
@@ -1091,7 +1091,7 @@ def range_in(inp1, inp2, parameter):
             inp2 = inp2.mean()
 
         inp2 = np.clip(inp2, -1, 1)
-        
+
         right_p = max(inp2, parameter) + 1 / 2
         left_p = min(inp2, parameter) + 1 / 2
 
@@ -1138,12 +1138,14 @@ def vectorize(inp1, inp2, parameter):
     else:
         return inp1
 
+
 def first(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
         return inp1[0]
 
     else:
         return inp1
+
 
 def last(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
@@ -1154,3 +1156,19 @@ def last(inp1, inp2, parameter):
 
 # TODO: differences -> computational derivative of 1D vector of inp1
 
+
+def rotate(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        num_to_rotate = round(len(inp1) * (parameter + 1 / 2))
+        return np.roll(inp1, num_to_rotate, axis=0)
+
+    else:
+        return inp1
+
+
+def reverse(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return np.flip(inp1) # flip along all axis
+
+    else:
+        return inp1
