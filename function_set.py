@@ -20,7 +20,20 @@ functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2",
                    "first",
                    "last",
                    "rotate",
+                   "push_back",
+                   "push_front",
+                   "set_fs",
+                   "sum_fs",
+                   "transpose",
+                   "vecfromdouble",
+                   "y_wire",
+                   "no_op",
+                   "const_fs",
+                   "constvectord",
+                   "zeros",
+                   "ones",
                    "reverse"]
+
 
 functions_openCV = ["GaussianBlur"]
 
@@ -1099,8 +1112,8 @@ def range_in(inp1, inp2, parameter):
 
         inp2 = np.clip(inp2, -1, 1)
 
-        right_p = max(inp2, parameter) + 1 / 2
-        left_p = min(inp2, parameter) + 1 / 2
+        right_p = (max(inp2, parameter) + 1) / 2
+        left_p = (min(inp2, parameter) + 1) / 2
 
         split_right = int(round(len(inp1) * right_p))
         split_left = int(round(len(inp1) * left_p))
@@ -1118,8 +1131,8 @@ def index_y(inp1, inp2, parameter):
 
         inp2 = np.clip(inp2, -1, 1)
 
-        i_p = inp2 + 1 / 2
-        split_point = int(round(len(inp1) * i_p))
+        i_p = (inp2 + 1) / 2
+        split_point = int(round(len(inp1) * i_p)) - 1
 
         return inp1[split_point]
 
@@ -1130,7 +1143,7 @@ def index_y(inp1, inp2, parameter):
 def index_p(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
         idx_p = (parameter + 1) / 2
-        split_point = int(round(len(inp1) * idx_p))
+        split_point = int(round(len(inp1) * idx_p)) - 1
 
         return inp1[split_point]
 
@@ -1166,7 +1179,7 @@ def last(inp1, inp2, parameter):
 
 def rotate(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
-        num_to_rotate = round(len(inp1) * (parameter + 1 / 2))
+        num_to_rotate = round(len(inp1) * ((parameter + 1) / 2))
         return np.roll(inp1, num_to_rotate, axis=0)
 
     else:
@@ -1187,3 +1200,77 @@ def push_back(inp1, inp2, parameter):
 
 def push_front(inp1, inp2, parameter):
     return np.append(inp2, inp1)
+
+
+def set_fs(inp1, inp2, parameter):
+    if _is_matrix_matrix(inp1, inp2):
+        return np.array([inp1[0]] * len(inp2))
+
+    elif _is_matrix_scalar(inp1, inp2):
+        return np.array([inp2] * len(inp1))
+
+    elif _is_scalar_matrix(inp1, inp2):
+        return np.array([inp1] * len(inp2))
+
+    else:
+        return np.array([inp1])
+
+
+def sum_fs(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return np.sum(inp1)
+
+    else:
+        return inp1
+
+
+def transpose(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return np.transpose(inp1)
+
+    else:
+        return inp1
+
+
+def vecfromdouble(inp1, inp2, parameter):
+    if isinstance(inp1, (int, float)):
+        return np.array([inp1])
+
+    else:
+        return inp1
+
+
+def y_wire(inp1, inp2, parameter):
+    return inp2
+
+
+def no_op(inp1, inp2, parameter):
+    return inp1
+
+
+def const_fs(inp1, inp2, parameter):
+    return parameter
+
+
+def constvectord(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return np.zeros(inp1.shape) + parameter
+
+    else:
+        return np.array([parameter])
+
+
+def zeros(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return np.zeros(inp1.shape)
+
+    else:
+        return np.array([0])
+
+
+def ones(inp1, inp2, parameter):
+    if isinstance(inp1, np.ndarray):
+        return np.ones(inp1.shape)
+
+    else:
+        return np.array([1])
