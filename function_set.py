@@ -10,8 +10,17 @@ import scipy.stats
 import cv2
 
 functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2", "cpow1", "cpow2", "ypow", "exp1", "exp2",
-                   "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2", "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1", "max2", "min2"]
-
+                   "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2", "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1", "max2", "min2",
+                   "split_before",
+                   "split_after",
+                   "range_in",
+                   "index_y",
+                   "index_p",
+                   "vectorize",
+                   "first",
+                   "last",
+                   "rotate",
+                   "reverse"]
 
 functions_openCV = ["GaussianBlur"]
 
@@ -1060,8 +1069,6 @@ def min2(inp1, inp2, parameter):
 
     return np.minimum(inp1, inp2)
 
-# need to add below to functionset
-
 
 def split_before(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
@@ -1168,7 +1175,15 @@ def rotate(inp1, inp2, parameter):
 
 def reverse(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
-        return np.flip(inp1) # flip along all axis
+        return np.flip(inp1)  # flip along all axis
 
     else:
         return inp1
+
+
+def push_back(inp1, inp2, parameter):
+    return np.append(inp1, inp2)
+
+
+def push_front(inp1, inp2, parameter):
+    return np.append(inp2, inp1)
