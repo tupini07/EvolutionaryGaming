@@ -94,11 +94,9 @@ def _make_matrices_same_size(inp1, inp2):
 def add(inp1, inp2, parameter, combination_type=None):
     """
     Add to input values.
-    If both inputs are arrays, a new array is created, 
-    big enough in all dimensions, to hold the values of both arrays.
-    E.g., if inp1 has shape (3,6) and inp2 has shape (5,5),
-    the output will have shape (5,6).
-    The entries not contained in the input arrays are padded with zeros.
+    If both inputs are arrays, they're made the same shape and then added together.
+    If the inputs are a scalar and a matrix then the scalar is added element wise to 
+    the elements of the matrix.
 
     Parameters
     ----------
@@ -116,20 +114,9 @@ def add(inp1, inp2, parameter, combination_type=None):
         Sum of inputs.
     """
     if _is_matrix_matrix(inp1, inp2):
+        inp1, inp2 = _make_matrices_same_size(inp1, inp2)
 
-        # we pad
-        m1, m2 = _make_matrices_same_size(inp1, inp2)
-        return m1 + m2
-
-    elif _is_matrix_scalar(inp1, inp2):
-        return np.average(inp1) + inp2
-
-    elif _is_scalar_matrix(inp1, inp2):
-        return inp1 + np.average(inp2)
-
-    else:
-        added = inp1 + inp2
-        return added
+    return np.add(inp1, inp2)
 
 
 def lt(inp1, inp2, parameter):
@@ -241,39 +228,13 @@ def aminus(inp1, inp2, parameter):
     avg : float or np.ndarray
         |inp1 - inp2|/2
     """
-    def abs_list(l): return list(map(abs, l))
 
     if _is_matrix_matrix(inp1, inp2):
+        inp1, inp2 = _make_matrices_same_size(inp1, inp2)
 
-        placeh1, placeh2 = _make_matrices_same_size(inp1, inp2)
+    diff = np.abs(np.subtract(inp1, inp2))
 
-        diff = placeh1 - placeh2
-        abs_arr = np.apply_along_axis(abs_list, 0, diff)
-
-        avg = abs_arr / 2
-
-        return avg
-
-    elif _is_matrix_scalar(inp1, inp2):
-        asmatrix2 = np.full(inp1.shape, inp2)
-        diff = inp1 - asmatrix2
-        abs_arr = np.apply_along_axis(abs_list, 0, diff)
-
-        avg = abs_arr / 2
-
-        return avg
-
-    elif _is_scalar_matrix(inp1, inp2):
-        asmatrix1 = np.full(inp2.shape, inp1)
-        diff = asmatrix1 - inp2
-        abs_arr = np.apply_along_axis(abs_list, 0, diff)
-
-        avg = abs_arr / 2
-
-        return avg
-
-    else:
-        return abs(inp1 - inp2) / 2
+    return np.divide(diff, 2)
 
 
 def mult(inp1, inp2, parameter):
@@ -297,12 +258,9 @@ def mult(inp1, inp2, parameter):
     """
 
     if _is_matrix_matrix(inp1, inp2):
-        m1, m2 = _make_matrices_same_size(inp1, inp2)
+        inp1, inp2 = _make_matrices_same_size(inp1, inp2)
 
-        return m1 * m2
-
-    else:
-        return inp1 * inp2
+    return np.multiply(inp1, inp2)
 
 
 def cmult1(inp1, inp2, parameter):
@@ -324,9 +282,8 @@ def cmult1(inp1, inp2, parameter):
     prod : float or np.ndarray
         inp1 * parameter
     """
-    prod = inp1 * parameter
 
-    return prod
+    return np.multiply(inp1, parameter)
 
 
 def cmult2(inp1, inp2, parameter):
@@ -348,9 +305,8 @@ def cmult2(inp1, inp2, parameter):
     prod : float or np.ndarray
         inp2 * parameter
     """
-    prod = inp2 * parameter
 
-    return prod
+    return np.multiply(inp2, parameter)
 
 
 def inv1(inp1, inp2, parameter):
@@ -428,7 +384,7 @@ def abs1(inp1, inp2, parameter):
         Absolute value of inp1.
     """
 
-    abs1 = abs(inp1)
+    abs1 = np.abs(inp1)
 
     return abs1
 
@@ -481,7 +437,7 @@ def sqrt1(inp1, inp2, parameter):
         Square root of inp1.
     """
 
-    abs1 = abs(inp1)
+    abs1 = np.abs(inp1)
 
     sqrt1 = np.sqrt(abs1)
 
@@ -510,7 +466,7 @@ def sqrt2(inp1, inp2, parameter):
         Square root of inp2.
     """
 
-    abs2 = abs(inp2)
+    abs2 = np.abs(inp2)
 
     sqrt2 = np.sqrt(abs2)
 
@@ -958,11 +914,7 @@ def range(inp1, inp2, parameter):
 
 
 def round_st(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
-        return inp1.round()
-
-    else:
-        return round(inp1)
+    return np.round(inp1)
 
 
 def ceil(inp1, inp2, parameter):
@@ -1006,7 +958,7 @@ def min2(inp1, inp2, parameter):
 def split_before(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
         idx_p = (parameter + 1) / 2
-        split_point = int(round(len(inp1) * idx_p))
+        split_point = int(np.round(len(inp1) * idx_p))
 
         return inp1[:split_point]
 
@@ -1017,7 +969,7 @@ def split_before(inp1, inp2, parameter):
 def split_after(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
         idx_p = (parameter + 1) / 2
-        split_point = int(round(len(inp1) * idx_p))
+        split_point = int(np.round(len(inp1) * idx_p))
 
         return inp1[split_point:]
 
@@ -1052,7 +1004,7 @@ def index_y(inp1, inp2, parameter):
         inp2 = np.clip(inp2, -1, 1)
 
         i_p = (inp2 + 1) / 2
-        split_point = int(round(len(inp1) * i_p)) - 1
+        split_point = int(np.round(len(inp1) * i_p)) - 1
 
         return inp1[split_point]
 
@@ -1063,7 +1015,7 @@ def index_y(inp1, inp2, parameter):
 def index_p(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
         idx_p = (parameter + 1) / 2
-        split_point = int(round(len(inp1) * idx_p)) - 1
+        split_point = int(np.round(len(inp1) * idx_p)) - 1
 
         return inp1[split_point]
 
