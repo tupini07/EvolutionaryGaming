@@ -756,6 +756,7 @@ def acos1(inp1, inp2, parameter):
         arccos(inp1) / pi
     """
 
+    inp1 = np.clip(inp1, -1, 1)
     acos1 = np.arccos(inp1) / np.pi
 
     return acos1
@@ -782,6 +783,7 @@ def acos2(inp1, inp2, parameter):
         arccos(inp2) / pi
     """
 
+    inp2 = np.clip(inp2, -1, 1)
     acos2 = np.arccos(inp2) / np.pi
 
     return acos2
@@ -808,6 +810,7 @@ def asin1(inp1, inp2, parameter):
         2 * arcsin(inp1) / pi
     """
 
+    inp1 = np.clip(inp1, -1, 1)
     asin1 = 2 * np.arcsin(inp1) / np.pi
 
     return asin1
@@ -834,6 +837,7 @@ def asin2(inp1, inp2, parameter):
         2 * arcsin(inp2) / pi
     """
 
+    inp2 = np.clip(inp2, -1, 1)
     asin2 = 2 * np.arcsin(inp2) / np.pi
 
     return asin2
