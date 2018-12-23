@@ -722,31 +722,10 @@ def sqrtxy(inp1, inp2, parameter):
     """
 
     if _is_matrix_matrix(inp1, inp2):
-        m1, m2 = _make_matrices_same_size(inp1, inp2)
+        inp1, inp2 = _make_matrices_same_size(inp1, inp2)
 
-        square1 = np.linalg.matrix_power(m1, 2)
-        square2 = np.linalg.matrix_power(m2, 2)
-
-    elif isinstance(inp1, np.ndarray) and isinstance(inp2, float):
-        size = max(inp1.shape[0], inp1.shape[1])
-
-        padded1 = np.zeros((size, size))
-        padded1[:inp1.shape[0], :inp1.shape[1]] = inp1
-
-        square1 = np.linalg.matrix_power(padded1, 2)
-        square2 = inp2 * inp2
-
-    elif isinstance(inp1, float) and isinstance(inp2, np.ndarray):
-        size = max(inp2.shape[0], inp2.shape[1])
-
-        padded2 = np.zeros((size, size))
-        padded2[:inp2.shape[0], :inp2.shape[1]] = inp2
-
-        square1 = inp1 * inp1
-        square2 = np.linalg.matrix_power(padded2, 2)
-    else:
-        square1 = inp1 * inp1
-        square2 = inp2 * inp2
+    square1 = np.power(inp1, 2)
+    square2 = np.power(inp2, 2)
 
     sum_squares = square1 + square2
     root = np.sqrt(sum_squares)
