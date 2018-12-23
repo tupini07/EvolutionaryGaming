@@ -11,7 +11,7 @@ import scipy.stats
 import cv2
 
 functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2", "cpow1", "cpow2", "ypow", "exp1", "exp2",
-                   "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2", "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1", "max2", "min2",
+                   "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2", "max2", "min2",
                    "split_before",
                    "split_after",
                    "range_in",
@@ -35,10 +35,13 @@ functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2",
                    "ones",
                    "reverse"]
 
+statistical_functions = [
+    "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1"
+]
 
 functions_openCV = ["GaussianBlur"]
 
-functions = functions_atari + functions_openCV
+functions = functions_atari + functions_openCV + statistical_functions
 
 
 # np.seterr(all="raise")

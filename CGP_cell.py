@@ -62,7 +62,10 @@ class CGP_cell:
         inp2 = self.program.get_cell(self.inputs[1]).last_value
 
         self.last_value = np.nan_to_num(
-            self.function(inp1, inp2, self.parameter))
+            self.function(inp1, inp2, self.parameter)),
+
+        if self.function.__name__ not in function_set.statistical_functions:
+            self.last_value = np.clip(self.last_value, -1, 1)
 
 
 class Output_cell(CGP_cell):
@@ -102,11 +105,6 @@ class Output_cell(CGP_cell):
         inp2 = self.program.get_cell(self.inputs[1]).last_value
 
         input_values = [inp1, inp2]
-
-        # convert each input to list if isn't one already
-        for i, fo in enumerate(input_values):
-            if not isinstance(fo, list):
-                input_values[i] = [fo]
 
         # get the average value of the lists, this will be the final value of the inputs
         input_values = [np.average(ip) for ip in input_values]
