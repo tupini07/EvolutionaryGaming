@@ -1,3 +1,4 @@
+import itertools
 import math
 ######
 import types
@@ -55,18 +56,9 @@ def _is_scalar_matrix(inp1, inp2):
     return isinstance(inp1, (int, float)) and isinstance(inp2, np.ndarray)
 
 
-def _pad_to_square(inp1):
-    size = max(inp1.shape[0], inp1.shape[1])
-
-    padded = np.zeros((size, size))
-    padded[:inp1.shape[0], :inp1.shape[1]] = inp1
-
-    return padded
-
-
-def _pad_matrices(inp1, inp2):
+def _make_matrices_same_size(inp1, inp2):
     """
-    Pads matrices of different sizes to be the same size
+    makes matrices of different sizes to be the same size
 
     Parameters
     ----------
@@ -78,16 +70,22 @@ def _pad_matrices(inp1, inp2):
         [inp1, inp2]
         resized to the same size, by padding the smaller dimensions
     """
-    y_size = max(inp1.shape[1], inp2.shape[1])
-    x_size = max(inp1.shape[0], inp2.shape[0])
 
-    placeh1 = np.zeros([x_size, y_size])
-    placeh2 = np.zeros([x_size, y_size])
+    if inp1.shape == inp2.shape:
+        return inp1, inp2
 
-    placeh1[:inp1.shape[0], :inp1.shape[1]] = inp1
-    placeh2[:inp2.shape[0], :inp2.shape[1]] = inp2
+    # if it is different sizes then just resize the arrays to be of the same size as the smaller one
+    smallest_shape = [min(p) for p in zip(inp1.shape, inp2.shape)]
 
-    return placeh1, placeh2
+    return [np.resize(x, smallest_shape) for x in [inp1, inp2]]
+
+    # below is a possibility of how to pad to the biggest size. But making it equal in the biggest size is a
+    # bit harder, and most importantly may add noise. Although with the smallest method used we lose some information
+    # big_shape = [max(p) for p in itertools.zip_longest(inp1.shape, inp2.shape, fillvalue=0)]
+
+    # def pad_to_big_size(arr):
+    #     differences = [(0, b_size - m_size) for b_size, m_size in itertools.zip_longest(big_shape, arr.shape, fillvalue=0)]
+    #     return np.pad(arr, differences, 'constant')
 
 
 def add(inp1, inp2, parameter, combination_type=None):
@@ -117,7 +115,7 @@ def add(inp1, inp2, parameter, combination_type=None):
     if _is_matrix_matrix(inp1, inp2):
 
         # we pad
-        m1, m2 = _pad_matrices(inp1, inp2)
+        m1, m2 = _make_matrices_same_size(inp1, inp2)
         return m1 + m2
 
     elif _is_matrix_scalar(inp1, inp2):
@@ -153,7 +151,7 @@ def lt(inp1, inp2, parameter):
     """
 
     if _is_matrix_matrix(inp1, inp2):
-        m1, m2 = _pad_matrices(inp1, inp2)
+        m1, m2 = _make_matrices_same_size(inp1, inp2)
         return m1 < m2
 
     else:  # either matrix scalar, or viceversa, or scalar scalar
@@ -244,7 +242,7 @@ def aminus(inp1, inp2, parameter):
 
     if _is_matrix_matrix(inp1, inp2):
 
-        placeh1, placeh2 = _pad_matrices(inp1, inp2)
+        placeh1, placeh2 = _make_matrices_same_size(inp1, inp2)
 
         diff = placeh1 - placeh2
         abs_arr = np.apply_along_axis(abs_list, 0, diff)
@@ -296,7 +294,7 @@ def mult(inp1, inp2, parameter):
     """
 
     if _is_matrix_matrix(inp1, inp2):
-        m1, m2 = _pad_matrices(inp1, inp2)
+        m1, m2 = _make_matrices_same_size(inp1, inp2)
 
         return m1 * m2
 
@@ -375,20 +373,8 @@ def inv1(inp1, inp2, parameter):
         Inverted inp1.
     """
 
-    if isinstance(inp1, np.ndarray):
-        size = max(inp1.shape[0], inp1.shape[1])
-        padded = np.zeros((size, size))
-        padded[:inp1.shape[0], :inp1.shape[1]] = inp1
-
-        try:
-            inv = np.linalg.inv(inp1)
-            return inv
-        except np.linalg.LinAlgError:
-            return inp1
-    else:
-        inv = 1 / inp1 if inp1 != 0 else 0
-
-        return inv
+    inp1 = np.array(inp1)
+    return np.nan_to_num(1 / inp1)
 
 
 def inv2(inp1, inp2, parameter):
@@ -414,20 +400,8 @@ def inv2(inp1, inp2, parameter):
         Inverted inp2.
     """
 
-    if isinstance(inp2, np.ndarray):
-        size = max(inp2.shape[0], inp2.shape[1])
-        padded = np.zeros((size, size))
-        padded[:inp2.shape[0], :inp2.shape[1]] = inp2
-
-        try:
-            inv = np.linalg.inv(inp2)
-            return inv
-        except np.linalg.LinAlgError:
-            return inp2
-    else:
-        inv = 1 / inp2 if inp2 != 0 else 0
-
-        return inv
+    inp2 = np.array(inp2)
+    return np.nan_to_num(1 / inp2)
 
 
 def abs1(inp1, inp2, parameter):
@@ -562,19 +536,7 @@ def cpow1(inp1, inp2, parameter):
         |inp1|^parameter.
     """
 
-    parameter = abs(parameter)
-    inp1 = abs(inp1)
-
-    if isinstance(inp1, np.ndarray):
-
-        padded = _pad_to_square(inp1)
-        exponent = int(round(parameter))  # exponent must be integer
-        cpow1 = np.linalg.matrix_power(padded, exponent)
-
-    else:
-        cpow1 = inp1 ** parameter
-
-    return cpow1
+    return np.power(np.absolute(inp1), parameter + 1)
 
 
 def cpow2(inp1, inp2, parameter):
@@ -599,19 +561,7 @@ def cpow2(inp1, inp2, parameter):
         |inp2|^parameter.
     """
 
-    parameter = abs(parameter)
-    inp2 = abs(inp2)
-
-    if isinstance(inp2, np.ndarray):
-
-        padded = _pad_to_square(inp2)
-        exponent = int(round(parameter))  # exponent must be integer
-        cpow2 = np.linalg.matrix_power(padded, exponent)
-
-    else:
-        cpow2 = inp2 ** parameter
-
-    return cpow2
+    return np.power(np.absolute(inp2), parameter + 1)
 
 
 def ypow(inp1, inp2, parameter):
@@ -636,26 +586,10 @@ def ypow(inp1, inp2, parameter):
         |inp1|^|inp2|
     """
 
-    if _is_matrix_matrix(inp1, inp2):
-        inp2 = int(round(abs(np.mean(inp2))))  # exponent must be integer
+    if isinstance(inp2, np.ndarray):
+        inp2 = np.mean(inp2)
 
-        padded = _pad_to_square(inp1)
-        ypow = np.linalg.matrix_power(padded, inp2)
-
-    elif _is_matrix_scalar(inp1, inp2):
-        padded = _pad_to_square(inp1)
-
-        exponent = int(round(inp2))
-        ypow = np.linalg.matrix_power(padded, exponent)
-
-    elif _is_scalar_matrix(inp1, inp2):
-        exponent = np.mean(inp2)
-        ypow = inp1 ** exponent
-
-    else:
-        ypow = inp1 ** inp2
-
-    return ypow
+    return np.power(inp1, inp2)
 
 
 def exp1(inp1, inp2, parameter):
@@ -788,7 +722,7 @@ def sqrtxy(inp1, inp2, parameter):
     """
 
     if _is_matrix_matrix(inp1, inp2):
-        m1, m2 = _pad_matrices(inp1, inp2)
+        m1, m2 = _make_matrices_same_size(inp1, inp2)
 
         square1 = np.linalg.matrix_power(m1, 2)
         square2 = np.linalg.matrix_power(m2, 2)
@@ -1071,14 +1005,14 @@ def min1(inp1, inp2, parameter):
 
 def max2(inp1, inp2, parameter):
     if _is_matrix_matrix(inp1, inp2):
-        inp1, inp2 = _pad_matrices(inp1, inp2)
+        inp1, inp2 = _make_matrices_same_size(inp1, inp2)
 
     return np.maximum(inp1, inp2)
 
 
 def min2(inp1, inp2, parameter):
     if _is_matrix_matrix(inp1, inp2):
-        inp1, inp2 = _pad_matrices(inp1, inp2)
+        inp1, inp2 = _make_matrices_same_size(inp1, inp2)
 
     return np.minimum(inp1, inp2)
 
