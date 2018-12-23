@@ -70,14 +70,20 @@ def evaluator(candidate: List, args: Dict, render=True) -> float:
         if render:
             env.render()
 
-        action = program.evaluate(np.transpose(observation, [2, 0, 1]))
+        try:
+            action = program.evaluate(np.transpose(observation, [2, 0, 1]))
+        except Exception as err:
+            print("Individual:")
+            print(candidate)
+            raise err
+
 
         assert env.action_space.contains(
             action), "CGP suggested an illegal action: " + action + "\nAvailable actions are: " + env.action_space
 
         observation, reward, done, info = env.step(action)
 
-        total_score += reward 
+        total_score += reward
 
         if done:
             break
@@ -127,7 +133,6 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
     if random.random() > args["mutation_rate"]:
         return candidate
 
-
     output_nodes = candidate[-cc.N_OUTPUT_NODES*4:]
     inner_nodes = candidate[:-cc.N_OUTPUT_NODES*4]
 
@@ -146,7 +151,6 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
 
         return st
 
-    
     output_nodes = mutate_nodes_in_set(output_nodes, cc.MUTP_OUTPUT)
     inner_nodes = mutate_nodes_in_set(inner_nodes, cc.MUTP_NODES)
 
