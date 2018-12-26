@@ -1,6 +1,10 @@
+import random
+
 import numpy as np
 import pytest
 
+import constants as cc
+import evolutionary_problem as eap
 import function_set as fst
 
 # These are just simple tests to check that the functions in the functionset
@@ -20,7 +24,7 @@ def test_functionset_accept_type():
     for fname in fst.functions:
         if fname.startswith("_"):
             continue
-        
+
         func = getattr(fst, fname)
 
         test_matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
@@ -30,15 +34,42 @@ def test_functionset_accept_type():
         tests = [[test_matrix, test_matrix],
                  [test_scalar, test_matrix],
                  [test_matrix, test_scalar],
-                 [test_scalar, test_scalar], 
-                 [0,0]]
+                 [test_scalar, test_scalar],
+                 [0, 0]]
 
         for t_inp1, t_inp2 in tests:
             try:
                 res = func(t_inp1, t_inp2, test_parameter)
-                
+
                 if res is None:
-                    pytest.fail(f"it seems that function {fname} does not return a value.")
-                    
+                    pytest.fail(
+                        f"it seems that function {fname} does not return a value.")
+
             except Exception:
-                pytest.fail(f"Function '{fname}' seems to fail when the inputs are ({type(t_inp1)}, {type(t_inp2)})")
+                pytest.fail(
+                    f"Function '{fname}' seems to fail when the inputs are ({type(t_inp1)}, {type(t_inp2)})")
+
+
+def test_individual_generation_size():
+    if len(eap.generator(random.Random(), {})) != cc.N_EVOLVABLE_GENES:
+        pytest.fail(
+            "The generator is not generating individuals of the correct size.")
+
+
+def test_mutation_same_size():
+    class ea_test():
+        bounder = eap.bounder
+
+    individual = eap.generator(random.Random(), {})
+
+    before_mutation = len(individual)
+
+    individual = eap.mutate(random.Random(), [individual], {
+                            "mutation_rate": 2, 
+                            "_ec": ea_test})[0]
+
+    after_mutation = len(individual)
+
+    if before_mutation != after_mutation:
+        pytest.fail(
+            f"The length before mutation ({before_mutation}) is not the same as after mutation ({after_mutation})")
