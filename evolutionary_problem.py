@@ -77,7 +77,6 @@ def evaluator(candidate: List, args: Dict) -> float:
             print(candidate)
             raise err
 
-
         assert env.action_space.contains(
             action), "CGP suggested an illegal action: " + action + "\nAvailable actions are: " + env.action_space
 
@@ -139,8 +138,8 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
     # For both output and inner nodes the mutation selects MUTP_{NODES || OUTPUT} nodes from the sets of output
     # or inner nodes, and new radom values in [0, 1] are assigned to that node
 
-    def mutate_nodes_in_set(st, mut_prob):
-        n_nodes = len(st)/4
+    def mutate_nodes_in_set(st, mut_prob): 
+        n_nodes = len(st)/4 - 1
         n_nodes_to_pick = round(n_nodes * mut_prob)
 
         indices_to_mutate = [random.randint(
