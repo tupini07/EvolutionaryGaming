@@ -1,14 +1,15 @@
 import itertools
 import math
+import os
 import random
 from typing import Dict, List
 
+import gym
 import numpy as np
 from inspyred import ec
 from inspyred.benchmarks import Benchmark
 
 import constants as cc
-import gym
 from CGP_program import CGP_program
 
 bounder = ec.Bounder(0.0, 1.0)
@@ -43,12 +44,32 @@ def generator(random: random.Random, args: Dict) -> List:
 
 
 def observer(population, num_generations, num_evaluations, args):
+    """
+    Print information of the population at the end of every generation.
+    """
+
     best = max(population)
+
+    # Print information to console
     print(f"GEN: {num_generations} \t Best fitness: {best.fitness}")
     print("Fitnesses of complete population:")
+
     for p in sorted(population, key=lambda x: x.fitness, reverse=True):
         print("\t" + str(p.fitness))
+
     print()
+
+    # Write results to file
+
+    # create results file if it doesn't exist already
+    if not os.path.isfile("./results.csv"):
+        with open("./results.csv", "w+") as ff:
+            ff.write("Generation,Fitness,Individual\n")
+
+    with open("./results.csv", "a+") as ff:
+        # append information on the current individuals in the population to the results file
+        for p in population: 
+            ff.write(f"{num_generations},{p.fitness},{p.candidate}\n")
 
 
 @ec.evaluators.evaluator
@@ -138,7 +159,7 @@ def mutate(random: random.Random, candidate: List, args: Dict) -> List:
     # For both output and inner nodes the mutation selects MUTP_{NODES || OUTPUT} nodes from the sets of output
     # or inner nodes, and new radom values in [0, 1] are assigned to that node
 
-    def mutate_nodes_in_set(st, mut_prob): 
+    def mutate_nodes_in_set(st, mut_prob):
         n_nodes = len(st)/4 - 1
         n_nodes_to_pick = round(n_nodes * mut_prob)
 
