@@ -70,7 +70,7 @@ def observer(population, num_generations, num_evaluations, args):
         # append information on the current individuals in the population to the results file
         for p in population:
             ff.write(
-                f"{cc.ATARI_GAME},{num_generations},{p.fitness},{' '.join(p.candidate)}\n")
+                f"{cc.ATARI_GAME},{num_generations},{p.fitness},{' '.join(str(x) for x in p.candidate)}\n")
 
 
 @ec.evaluators.evaluator
