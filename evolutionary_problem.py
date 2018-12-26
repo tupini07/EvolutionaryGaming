@@ -64,12 +64,13 @@ def observer(population, num_generations, num_evaluations, args):
     # create results file if it doesn't exist already
     if not os.path.isfile("./results.csv"):
         with open("./results.csv", "w+") as ff:
-            ff.write("Generation,Fitness,Individual\n")
+            ff.write("Game Name,Generation,Fitness,Individual\n")
 
     with open("./results.csv", "a+") as ff:
         # append information on the current individuals in the population to the results file
-        for p in population: 
-            ff.write(f"{num_generations},{p.fitness},{p.candidate}\n")
+        for p in population:
+            ff.write(
+                f"{cc.ATARI_GAME},{num_generations},{p.fitness},{' '.join(p.candidate)}\n")
 
 
 @ec.evaluators.evaluator
