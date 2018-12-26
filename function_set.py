@@ -41,7 +41,7 @@ statistical_functions = [
 
 functions_openCV = ["GaussianBlur"]
 
-functions = functions_atari + functions_openCV + statistical_functions
+functions = functions_atari + statistical_functions + functions_openCV
 
 
 # np.seterr(all="raise")
@@ -333,7 +333,7 @@ def inv1(inp1, inp2, parameter):
     """
 
     inp1 = np.array(inp1)
-    return np.nan_to_num(1 / inp1)
+    return np.nan_to_num(np.divide(1, inp1))
 
 
 def inv2(inp1, inp2, parameter):
@@ -360,7 +360,7 @@ def inv2(inp1, inp2, parameter):
     """
 
     inp2 = np.array(inp2)
-    return np.nan_to_num(1 / inp2)
+    return np.nan_to_num(np.divide(1, inp2))
 
 
 def abs1(inp1, inp2, parameter):
@@ -573,7 +573,6 @@ def exp1(inp1, inp2, parameter):
     """
 
     exp1 = np.expm1(inp1)
-    exp1 = exp1 - 1
     exp1 = exp1 / (np.exp(1) - 1)
 
     return exp1
@@ -600,9 +599,8 @@ def exp2(inp1, inp2, parameter):
         (e^inp2 - 1) / (e - 1)
     """
 
-    exp2 = np.expm1(inp1)
-    exp2 = exp2 - 1
-    exp2 = exp2 / (np.exp(1) - 1)
+    exp2 = np.expm1(inp2)
+    exp2 = np.divide(exp2, (np.exp(1) - 1))
 
     return exp2
 
@@ -984,11 +982,11 @@ def range_in(inp1, inp2, parameter):
 
         inp2 = np.clip(inp2, -1, 1)
 
-        right_p = (max(inp2, parameter) + 1) / 2
-        left_p = (min(inp2, parameter) + 1) / 2
+        right_p = (np.max([inp2, parameter]) + 1) / 2
+        left_p = (np.min([inp2, parameter]) + 1) / 2
 
-        split_right = int(round(len(inp1) * right_p))
-        split_left = int(round(len(inp1) * left_p))
+        split_right = int(np.round(len(inp1) * right_p))
+        split_left = int(np.round(len(inp1) * left_p))
 
         return inp1[split_left:split_right]
 
