@@ -52,7 +52,7 @@ def observer(population, num_generations, num_evaluations, args):
 
 
 @ec.evaluators.evaluator
-def evaluator(candidate: List, args: Dict, render=True) -> float:
+def evaluator(candidate: List, args: Dict) -> float:
 
     # the [0] *3*4 represent the genome for the input cells
     candidate = ([0]*3*4) + candidate
@@ -67,7 +67,7 @@ def evaluator(candidate: List, args: Dict, render=True) -> float:
 
     for _ in range(10_000):
 
-        if render:
+        if args.get("render", False):
             env.render()
 
         try:

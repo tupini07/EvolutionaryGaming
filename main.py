@@ -34,7 +34,8 @@ def main(prng=None, display=False):
                           tournament_size=3,
                           max_generations=120,
                           crossover_rate=0.2,
-                          mutation_rate=0.7)  
+                          mutation_rate=0.7, 
+                          render=True)  
 
     if display:
         best = max(final_pop)
