@@ -21,6 +21,7 @@ class CGP_program:
     def __init__(self, genome):
         assert len(genome[0]) == 4, ("Program genome should be a list of lists. The inner lists are the "
                                      "individual cell genomes and should be of length 4")
+        self.genome = genome
 
         self.cells = []
         self.num_cells = len(genome)
@@ -28,7 +29,7 @@ class CGP_program:
         for cell_genome in genome[:-cc.N_OUTPUT_NODES]:
             cell = CGP_cell(cell_genome, self)
             self.cells.append(cell)
-            
+
         for cell_genome in genome[-cc.N_OUTPUT_NODES:]:
             cell = Output_cell(cell_genome, self)
             self.cells.append(cell)
@@ -38,7 +39,6 @@ class CGP_program:
         self.output_cells = self.cells[-cc.N_OUTPUT_NODES:]
 
         self.mark_active()
-
 
     def last_value(self, cell_num):
         """
@@ -71,7 +71,6 @@ class CGP_program:
         """
         return self.cells[cell_num]
 
-
     def evaluate(self, inputs):
         """
         Evaluate all cells given new inputs and produce an output value.
@@ -100,18 +99,17 @@ class CGP_program:
 
         # just get the index of the "ouput" which has the maximum value
         outputs = [o.last_value for o in self.output_cells]
-        
+
         max_index = np.argmax(outputs)
 
         return max_index
-    
 
     def mark_active(self):
         """
         Mark cells whose output isn't connected to the outputs as inactive
         and the other cells as active.
         """
-        queue = self.cells[-cc.N_OUTPUT_NODES:] #put outputs in queue
+        queue = self.cells[-cc.N_OUTPUT_NODES:]  # put outputs in queue
         found = set(queue)
 
         while queue != []:
@@ -121,7 +119,7 @@ class CGP_program:
             curr.active = True
 
             i1, i2 = curr.inputs
-            
+
             cell1 = self.cells[i1]
             if not cell1 in found:
                 queue.append(cell1)
@@ -132,6 +130,27 @@ class CGP_program:
                 queue.append(cell2)
                 found.add(cell2)
 
-            
-            
-            
+    def __repr__(self):
+        """
+        Returns the string representation of the GCP program. This representation can then be used to recreate
+        the GCP program by using the `from_repr` class method.
+        """
+
+        return "GCP_Program:Genome::" + " ".join(self.genome)
+
+    @classmethod
+    def from_repr(cls, repr):
+        """
+        Given a string representation of a GCP program, return an instance of GCP_Program which corresponds
+        to the representation. 
+
+        Parameters
+        ----------
+        repr : string
+            The representation of the GCP_Program
+
+        """
+
+        genome = repr.split("::")[1].split(" ")
+
+        return cls(genome)
