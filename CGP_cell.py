@@ -61,8 +61,9 @@ class CGP_cell:
         inp1 = self.program.get_cell(self.inputs[0]).last_value
         inp2 = self.program.get_cell(self.inputs[1]).last_value
 
-        self.last_value = np.nan_to_num(
-            self.function(inp1, inp2, self.parameter)),
+        self.last_value = np.squeeze(
+            np.nan_to_num(
+                self.function(inp1, inp2, self.parameter)))
 
         if self.function.__name__ not in function_set.statistical_functions:
             self.last_value = np.clip(self.last_value, -1, 1)
