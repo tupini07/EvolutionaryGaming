@@ -156,20 +156,22 @@ class CGP_program:
 
             # add every cell
             for ic, cell in enumerate(self.cells):
-                if cell.active:
-                    if cell in self.input_cells:
-                        inputs.node(str(ic), "Input " + str(ic))
+                if cell in self.input_cells:
+                    inputs.node(str(ic), "Input " + str(ic))
 
-                    elif cell in self.output_cells:
-                        outputs.node(str(ic), "Output " + str(ic -
-                                                              (len(self.cells) - cc.N_OUTPUT_NODES)))
+                if not cell.active:
+                    continue
+
+                elif cell in self.output_cells:
+                    outputs.node(str(ic), "Output " + str(ic -
+                                                          (len(self.cells) - cc.N_OUTPUT_NODES)))
+
+                else:
+                    if inner_in_separate_cluster:
+                        inner.node(str(ic), cell.function.__name__)
 
                     else:
-                        if inner_in_separate_cluster:
-                            inner.node(str(ic), cell.function.__name__)
-
-                        else:
-                            dot.node(str(ic), cell.function.__name__)
+                        dot.node(str(ic), cell.function.__name__)
 
         for ic, cell in enumerate(self.cells):
             if not cell.active or ic <= 2:
