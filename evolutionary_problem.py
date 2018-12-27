@@ -96,7 +96,7 @@ def evaluator(candidate: List, args: Dict) -> float:
             action = program.evaluate(np.transpose(observation, [2, 0, 1]))
         except Exception as err:
             print("Individual:")
-            print(candidate)
+            print(str(program))
             raise err
 
         assert env.action_space.contains(
