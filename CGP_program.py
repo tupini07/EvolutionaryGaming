@@ -41,7 +41,7 @@ class CGP_program:
         self.input_cells = self.cells[:3]
 
         self.output_cells = self.cells[-cc.N_OUTPUT_NODES:]
-        
+
         self.mark_active()
 
     def last_value(self, cell_num):
@@ -134,19 +134,25 @@ class CGP_program:
                 queue.append(cell2)
                 found.add(cell2)
 
-    def draw_function_graph(self, picture_name="gcp_program_graph"):
+    def draw_function_graph(self, picture_name="gcp_program_graph", format="svg", inner_in_separate_cluster=False):
         """
         Renders CGP program as an svg image. The image is saved to disk,
-        
+
         Parameters
         ----------
         picture_name : str, optional
             the name we want to give to the image file (the default is "gcp_program_graph")
-        
-        """
-        dot = Digraph(name='GCP Program', format='svg')
+        format : str, optional
+            The format in which to save the output image. Possible values are the following [pdf, png, svg] (the default is "svg")
+        inner_in_separate_cluster : bool, optional
+            Whether to draw the inner nodes in a separate cluster (the default is False)
 
-        with dot.subgraph(name="clusterInputs") as inputs, dot.subgraph(name="clusterOutputs") as outputs:
+        """
+        dot = Digraph(name='GCP Program', format=format)
+
+        with dot.subgraph(name="clusterInputs") as inputs, \
+                dot.subgraph(name="clusterOutputs") as outputs, \
+                dot.subgraph(name="clusterInner") as inner:
 
             # add every cell
             for ic, cell in enumerate(self.cells):
@@ -155,10 +161,15 @@ class CGP_program:
                         inputs.node(str(ic), "Input " + str(ic))
 
                     elif cell in self.output_cells:
-                        outputs.node(str(ic), "Output " + str(ic - (len(self.cells) - cc.N_OUTPUT_NODES)))
+                        outputs.node(str(ic), "Output " + str(ic -
+                                                              (len(self.cells) - cc.N_OUTPUT_NODES)))
 
                     else:
-                        dot.node(str(ic), cell.function.__name__)
+                        if inner_in_separate_cluster:
+                            inner.node(str(ic), cell.function.__name__)
+
+                        else:
+                            dot.node(str(ic), cell.function.__name__)
 
         for ic, cell in enumerate(self.cells):
             if not cell.active or ic <= 2:
