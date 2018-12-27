@@ -134,11 +134,7 @@ def crossover(random: random.Random, mom: List, dad: List, args: Dict) -> List[L
 
         return bounder([p1[i] + p2[i] for i in range(len(mom))], args)
 
-    if random.random() < args["crossover_rate"]:
-        return [gen_offspring(), gen_offspring()]
-
-    else:
-        return [mom, dad]
+    return [gen_offspring(), gen_offspring()]
 
 
 @ec.variators.mutator
