@@ -155,7 +155,7 @@ class CGP_program:
                         inputs.node(str(ic), "Input " + str(ic))
 
                     elif cell in self.output_cells:
-                        outputs.node(str(ic), "Output " + str(ic))
+                        outputs.node(str(ic), "Output " + str(ic - (len(self.cells) - cc.N_OUTPUT_NODES)))
 
                     else:
                         dot.node(str(ic), cell.function.__name__)
