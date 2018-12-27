@@ -14,13 +14,14 @@ def main(prng=None, display=False):
 
     ea = inspyred.ec.GA(prng)
 
-    ea.selector = inspyred.ec.selectors.tournament_selection
+    ea.selector = inspyred.ec.selectors.rank_selection
 
     ea.variator = [problem.mutate,
                    problem.crossover]
 
     # ea.replacer = inspyred.ec.replacers.steady_state_replacement
-    ea.replacer = inspyred.ec.replacers.plus_replacement
+    # ea.replacer = inspyred.ec.replacers.plus_replacement
+    ea.replacer = inspyred.ec.replacers.generational_replacement
 
     ea.terminator = inspyred.ec.terminators.generation_termination
 
@@ -33,9 +34,10 @@ def main(prng=None, display=False):
                           maximize=problem.maximize,
                           tournament_size=3,
                           max_generations=120,
-                          crossover_rate=0.2,
+                          num_selected=6, # for crossover, only this # of parents are chosen 
+                          num_elites=2, # number of elites for generaitonal replacement
                           mutation_rate=0.7, 
-                          render=True)  
+                          render=False)  
 
     if display:
         best = max(final_pop)
