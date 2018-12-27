@@ -1,4 +1,8 @@
+import os
+
 import numpy as np
+from graphviz import Digraph
+
 import constants as cc
 from CGP_cell import CGP_cell, Output_cell
 
@@ -37,7 +41,7 @@ class CGP_program:
         self.input_cells = self.cells[:3]
 
         self.output_cells = self.cells[-cc.N_OUTPUT_NODES:]
-
+        
         self.mark_active()
 
     def last_value(self, cell_num):
@@ -130,13 +134,40 @@ class CGP_program:
                 queue.append(cell2)
                 found.add(cell2)
 
+    def draw_function_graph(self, picture_name="gcp_program_graph"):
+        dot = Digraph(name='GCP Program', format='svg')
+
+        with dot.subgraph(name="clusterInputs") as inputs, dot.subgraph(name="clusterOutputs") as outputs:
+
+            # add every cell
+            for ic, cell in enumerate(self.cells):
+                if cell.active:
+                    if cell in self.input_cells:
+                        inputs.node(str(ic), "Input " + str(ic))
+
+                    elif cell in self.output_cells:
+                        outputs.node(str(ic), "Output " + str(ic))
+
+                    else:
+                        dot.node(str(ic), cell.function.__name__)
+
+        for ic, cell in enumerate(self.cells):
+            if not cell.active or ic <= 2:
+                continue
+
+            for inp in cell.inputs:
+                dot.edge(str(inp), str(ic))
+
+        dot.render(picture_name)
+        os.remove(picture_name)  # remove RAW dot file
+
     def __repr__(self):
         """
         Returns the string representation of the GCP program. This representation can then be used to recreate
         the GCP program by using the `from_repr` class method.
         """
 
-        return "GCP_Program:Genome::" + " ".join(self.genome)
+        return "GCP_Program:Genome::" + str(self.genome)
 
     @classmethod
     def from_repr(cls, repr):
@@ -150,7 +181,7 @@ class CGP_program:
             The representation of the GCP_Program
 
         """
+        if type(repr) == str:
+            repr = eval(repr.split("::")[1])
 
-        genome = repr.split("::")[1].split(" ")
-
-        return cls(genome)
+        return cls(repr)
