@@ -1,5 +1,7 @@
-import function_set
 import numpy as np
+
+import constants as cc
+import function_set
 
 
 class CGP_cell:
@@ -33,9 +35,11 @@ class CGP_cell:
     """
 
     def __init__(self, genome, program):
-        # get inputs
-        inp1 = round(genome[0] * (program.num_cells-1))
-        inp2 = round(genome[1] * (program.num_cells-1))
+        
+        # get inputs (we don't want to count output nodes as possible input nodes)
+        inp1 = round(genome[0] * (program.num_cells - 1 - cc.N_OUTPUT_NODES))
+        inp2 = round(genome[1] * (program.num_cells - 1 - cc.N_OUTPUT_NODES))
+
         self.inputs = (inp1, inp2)
 
         # get function
