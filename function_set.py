@@ -977,6 +977,9 @@ def split_after(inp1, inp2, parameter):
 
 def range_in(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
+        inp1 = np.nan_to_num(inp1)
+        inp2 = np.nan_to_num(inp2)
+
         if isinstance(inp2, np.ndarray):
             inp2 = inp2.mean()
 
@@ -987,6 +990,9 @@ def range_in(inp1, inp2, parameter):
 
         split_right = int(np.round(len(inp1) * right_p))
         split_left = int(np.round(len(inp1) * left_p))
+
+        if split_left == split_right:
+            split_right += 1
 
         return inp1[split_left:split_right]
 
@@ -1030,7 +1036,7 @@ def vectorize(inp1, inp2, parameter):
 
 
 def first(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
+    if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         return inp1[0]
 
     else:
@@ -1038,7 +1044,7 @@ def first(inp1, inp2, parameter):
 
 
 def last(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
+    if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         return inp1[-1]
 
     else:

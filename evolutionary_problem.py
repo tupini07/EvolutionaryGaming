@@ -83,6 +83,13 @@ def evaluator(candidate: List, args: Dict) -> float:
 
     program = CGP_program(cpg_genome)
 
+    program.draw_function_graph("currently_evaluating")  # TODO: remove
+
+    # if current program doesn't make use of input nodes then just return -inf as firtness
+    if not any(x.active for x in program.input_cells):
+        return np.NINF
+
+    # else just proceed to make the evaluation
     env = gym.make(cc.ATARI_GAME)
     observation = env.reset()
     total_score = 0.0
@@ -97,6 +104,7 @@ def evaluator(candidate: List, args: Dict) -> float:
         except Exception as err:
             print("Individual:")
             print(str(program))
+            program.draw_function_graph("problamtic_CGP_program")
             raise err
 
         assert env.action_space.contains(
@@ -110,6 +118,9 @@ def evaluator(candidate: List, args: Dict) -> float:
             break
 
     env.close()
+
+    import datetime
+    print(f"[{datetime.datetime.now()}]\tEvaluated individual. Score: {total_score}")  # TODO: remove
 
     return total_score
 
