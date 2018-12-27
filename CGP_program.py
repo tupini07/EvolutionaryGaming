@@ -135,6 +135,15 @@ class CGP_program:
                 found.add(cell2)
 
     def draw_function_graph(self, picture_name="gcp_program_graph"):
+        """
+        Renders CGP program as an svg image. The image is saved to disk,
+        
+        Parameters
+        ----------
+        picture_name : str, optional
+            the name we want to give to the image file (the default is "gcp_program_graph")
+        
+        """
         dot = Digraph(name='GCP Program', format='svg')
 
         with dot.subgraph(name="clusterInputs") as inputs, dot.subgraph(name="clusterOutputs") as outputs:
