@@ -43,7 +43,11 @@ def test_functionset_accept_type():
 
                 if res is None:
                     pytest.fail(
-                        f"it seems that function {fname} does not return a value.")
+                        f"it seems that function '{fname}' does not return a value.")
+
+                if isinstance(res, np.ndarray) and len(res) == 0:
+                    pytest.fail(
+                        f"it seems that function '{fname}' returns an empty array for inputs of types ({type(t_inp1)}, {type(t_inp2)}).")
 
             except Exception:
                 pytest.fail(
@@ -65,7 +69,7 @@ def test_mutation_same_size():
     before_mutation = len(individual)
 
     individual = eap.mutate(random.Random(), [individual], {
-                            "mutation_rate": 2, 
+                            "mutation_rate": 2,
                             "_ec": ea_test})[0]
 
     after_mutation = len(individual)
