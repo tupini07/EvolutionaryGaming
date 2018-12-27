@@ -35,7 +35,7 @@ def main(prng=None, display=False):
                           tournament_size=3,
                           max_generations=120,
                           num_selected=6, # for crossover, only this # of parents are chosen 
-                          num_elites=2, # number of elites for generaitonal replacement
+                          num_elites=3, # number of elites for generaitonal replacement
                           mutation_rate=0.7, 
                           render=False)  
 
