@@ -43,7 +43,6 @@ functions_openCV = ["GaussianBlur"]
 
 functions = functions_atari + statistical_functions + functions_openCV
 
-
 # np.seterr(all="raise")
 
 
@@ -170,6 +169,9 @@ def GaussianBlur(inp1, inp2, parameter):
     if not isinstance(inp1, np.ndarray):
         return inp1
 
+    if parameter < 0:
+        parameter *= -1
+    
     ksizex = int(parameter * inp1.shape[0])
     if ksizex % 2 == 0:
         ksizex += 1
