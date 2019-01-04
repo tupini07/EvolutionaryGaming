@@ -1188,7 +1188,7 @@ def Sobel1(inp1, inp2, parameter):
     if not isinstance(inp1, np.ndarray):
         return inp1
 
-    mat_array_1 = cv2.UMat(inp1)
+    mat_array_1 = cv2.UMat(np.float32(inp1))
 
     sobel = cv2.Sobel(mat_array_1, -1, 1, 1)
 
@@ -1220,7 +1220,7 @@ def Sobel2(inp1, inp2, parameter):
     if not isinstance(inp2, np.ndarray):
         return inp2
 
-    mat_array_2 = cv2.UMat(inp2)
+    mat_array_2 = cv2.UMat(np.float32(inp2))
 
     sobel = cv2.Sobel(mat_array_2, -1, 1, 1)
 
@@ -1253,7 +1253,7 @@ def Sobelx1(inp1, inp2, parameter):
     if not isinstance(inp1, np.ndarray):
         return inp1
 
-    mat_array_1 = cv2.UMat(inp1)
+    mat_array_1 = cv2.UMat(np.float32(inp1))
 
     sobel = cv2.Sobel(mat_array_1, -1, 1, 0)
 
@@ -1286,7 +1286,7 @@ def Sobelx2(inp1, inp2, parameter):
     if not isinstance(inp2, np.ndarray):
         return inp2
 
-    mat_array_2 = cv2.UMat(inp2)
+    mat_array_2 = cv2.UMat(np.float32(inp2))
 
     sobel = cv2.Sobel(mat_array_2, -1, 1, 0)
 
@@ -1319,7 +1319,7 @@ def Sobely1(inp1, inp2, parameter):
     if not isinstance(inp1, np.ndarray):
         return inp1
 
-    mat_array_1 = cv2.UMat(inp1)
+    mat_array_1 = cv2.UMat(np.float32(inp1))
 
     sobel = cv2.Sobel(mat_array_1, -1, 0, 1)
 
@@ -1352,7 +1352,7 @@ def Sobely2(inp1, inp2, parameter):
     if not isinstance(inp2, np.ndarray):
         return inp2
 
-    mat_array_2 = cv2.UMat(inp2)
+    mat_array_2 = cv2.UMat(np.float32(inp2))
 
     sobel = cv2.Sobel(mat_array_2, -1, 0, 1)
 
