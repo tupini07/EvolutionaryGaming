@@ -1,5 +1,6 @@
 import itertools
 import math
+import multiprocessing
 import os
 import random
 from typing import Dict, List
@@ -82,7 +83,7 @@ def evaluator(candidate: List, args: Dict) -> float:
                   for i in range(0, len(candidate), 4)]  # split into chunks of 4
 
     program = CGP_program(cpg_genome)
-
+    
     program.draw_function_graph("currently_evaluating")  # TODO: remove
 
     # if current program doesn't make use of input nodes then just return -inf as firtness
@@ -100,7 +101,12 @@ def evaluator(candidate: List, args: Dict) -> float:
             env.render()
 
         try:
-            action = program.evaluate(np.transpose(observation, [2, 0, 1]))
+   
+            action = program.evaluate(np.transpose(observation, [2, 0, 1]))()
+
+        except MemoryError:
+            return np.NINF
+
         except Exception as err:
             print("Individual:")
             print(str(program))
@@ -120,7 +126,8 @@ def evaluator(candidate: List, args: Dict) -> float:
     env.close()
 
     import datetime
-    print(f"[{datetime.datetime.now()}]\tEvaluated individual. Score: {total_score}")  # TODO: remove
+    # TODO: remove
+    print(f"[{datetime.datetime.now()}]\tEvaluated individual. Score: {total_score}\n")
 
     return total_score
 
