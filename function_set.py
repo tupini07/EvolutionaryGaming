@@ -39,9 +39,13 @@ statistical_functions = [
     "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1"
 ]
 
-functions_openCV = ["GaussianBlur"]
+functions_openCV = ["GaussianBlur",
+                    "Sobel1", "Sobel2",
+                    "Sobelx1", "Sobelx2",
+                    "Sobely1", "Sobely2"
+]
 
-functions = functions_atari + statistical_functions + functions_openCV
+functions = functions_openCV#functions_atari + statistical_functions + functions_openCV
 
 # np.seterr(all="raise")
 
@@ -1152,3 +1156,194 @@ def ones(inp1, inp2, parameter):
 
     else:
         return np.array([1])
+
+
+def Sobel1(inp1, inp2, parameter):
+    """
+    Calculate first derivative of inp1 with an extended Sobel operator.
+    See opencv documentation for further explanation.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    sobel : np.ndarray
+        Image after application of Sobel operator.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    mat_array_1 = cv2.UMat(inp1)
+    
+    sobel = cv2.Sobel(mat_array_1, -1, 1, 1)
+
+    sobel = sobel.get()
+
+    return sobel
+
+def Sobel2(inp1, inp2, parameter):
+    """
+    Calculate first derivative of inp2 with an extended Sobel operator.
+    See opencv documentation for further explanation.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    sobel : np.ndarray
+        Image after application of Sobel operator.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    mat_array_2 = cv2.UMat(inp2)
+
+    sobel = cv2.Sobel(mat_array_2, -1, 1, 1)
+
+    sobel = sobel.get()
+
+    return sobel
+
+def Sobelx1(inp1, inp2, parameter):
+    """
+    Calculate first derivative of inp1 
+    with an extended Sobel operator over the x dimension.
+    See opencv documentation for further explanation.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    sobel : np.ndarray
+        Image after application of Sobel operator.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    mat_array_1 = cv2.UMat(inp1)
+    
+    sobel = cv2.Sobel(mat_array_1, -1, 1, 0)
+
+    sobel = sobel.get()
+
+    return sobel
+
+def Sobelx2(inp1, inp2, parameter):
+    """
+    Calculate first derivative of inp2 
+    with an extended Sobel operator over the x dimension.
+    See opencv documentation for further explanation.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    sobel : np.ndarray
+        Image after application of Sobel operator.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    mat_array_2 = cv2.UMat(inp2)
+    
+    sobel = cv2.Sobel(mat_array_2, -1, 1, 0)
+
+    sobel = sobel.get()
+
+    return sobel
+
+def Sobely1(inp1, inp2, parameter):
+    """
+    Calculate first derivative of inp1 
+    with an extended Sobel operator over the y dimension.
+    See opencv documentation for further explanation.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    sobel : np.ndarray
+        Image after application of Sobel operator.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    mat_array_1 = cv2.UMat(inp1)
+    
+    sobel = cv2.Sobel(mat_array_1, -1, 0, 1)
+
+    sobel = sobel.get()
+
+    return sobel
+
+def Sobely2(inp1, inp2, parameter):
+    """
+    Calculate first derivative of inp2 
+    with an extended Sobel operator over the y dimension.
+    See opencv documentation for further explanation.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    sobel : np.ndarray
+        Image after application of Sobel operator.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    mat_array_2 = cv2.UMat(inp2)
+    
+    sobel = cv2.Sobel(mat_array_2, -1, 0, 1)
+
+    sobel = sobel.get()
+
+    return sobel
