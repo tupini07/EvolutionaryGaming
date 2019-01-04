@@ -933,7 +933,7 @@ def floor(inp1, inp2, parameter):
 
 
 def max1(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
+    if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         return inp1.max()
 
     else:
@@ -941,7 +941,7 @@ def max1(inp1, inp2, parameter):
 
 
 def min1(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
+    if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         return inp1.min()
 
     else:

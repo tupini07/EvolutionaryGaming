@@ -1,6 +1,7 @@
 .vscode
 results.csv
 *.svg
+problamtic_CGP_program
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
