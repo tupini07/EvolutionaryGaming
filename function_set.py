@@ -41,10 +41,11 @@ statistical_functions = [
 
 functions_openCV = ["GaussianBlur"]
 
-functions = functions_atari + statistical_functions + functions_openCV
+functions = functions_atari + statistical_functions  # + functions_openCV
 
 
 # np.seterr(all="raise")
+np.seterr(all="ignore")
 
 
 def _is_matrix_matrix(inp1, inp2):
@@ -979,6 +980,7 @@ def range_in(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray):
         inp1 = np.nan_to_num(inp1)
         inp2 = np.nan_to_num(inp2)
+        parameter = np.nan_to_num(parameter)
 
         if isinstance(inp2, np.ndarray):
             inp2 = inp2.mean()
@@ -1001,7 +1003,7 @@ def range_in(inp1, inp2, parameter):
 
 
 def index_y(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
+    if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         if isinstance(inp2, np.ndarray):
             inp2 = inp2.mean()
 
@@ -1017,7 +1019,7 @@ def index_y(inp1, inp2, parameter):
 
 
 def index_p(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
+    if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         idx_p = (parameter + 1) / 2
         split_point = int(np.round(len(inp1) * idx_p)) - 1
 
