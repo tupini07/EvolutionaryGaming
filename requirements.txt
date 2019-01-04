@@ -2,3 +2,6 @@ graphviz
 inspyred
 pytest
 gym
+timeout-decorator
+gym[atari]
+opencv-python

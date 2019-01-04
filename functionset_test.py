@@ -49,9 +49,9 @@ def test_functionset_accept_type():
                     pytest.fail(
                         f"it seems that function '{fname}' returns an empty array for inputs of types ({type(t_inp1)}, {type(t_inp2)}).")
 
-            except Exception:
+            except Exception as err:
                 pytest.fail(
-                    f"Function '{fname}' seems to fail when the inputs are ({type(t_inp1)}, {type(t_inp2)})")
+                    f"Function '{fname}' seems to fail when the inputs are ({type(t_inp1)}, {type(t_inp2)}) \nwith the following exception:\n{err}")
 
 
 def test_individual_generation_size():
@@ -77,3 +77,34 @@ def test_mutation_same_size():
     if before_mutation != after_mutation:
         pytest.fail(
             f"The length before mutation ({before_mutation}) is not the same as after mutation ({after_mutation})")
+
+
+def test_length_of_returns():
+    """
+    execute pytest like this:
+        pytest -s
+
+    to see the print statements
+    """
+    print()
+    test_matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+    tests = [[test_matrix, test_matrix]]
+    test_parameter = 0.5
+
+    print(f"input shape is {test_matrix.shape}")
+
+    for fname in fst.functions:
+        if fname.startswith("_"):
+            continue
+
+        func = getattr(fst, fname)
+
+        for t_inp1, t_inp2 in tests:
+            try:
+                res = func(t_inp1, t_inp2, test_parameter)
+
+                print(f"{fname}({type(t_inp1)}, {type(t_inp2)}) => {np.array(res).shape}")
+
+            except Exception:
+                pass
