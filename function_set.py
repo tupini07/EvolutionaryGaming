@@ -7,6 +7,7 @@ from functools import wraps
 import numpy as np
 import scipy
 import scipy.stats
+from scipy.ndimage.filters import median_filter
 
 import cv2
 
@@ -42,10 +43,13 @@ statistical_functions = [
 functions_openCV = ["GaussianBlur",
                     "Sobel1", "Sobel2",
                     "Sobelx1", "Sobelx2",
-                    "Sobely1", "Sobely2"
+                    "Sobely1", "Sobely2",
+                    "smoothMedian1", "smoothMedian2",
+                    "smoothBilateral1", "smoothBilateral2",
+                    "unsharpen1", "unsharpen2"
                     ]
 
-functions = functions_atari + statistical_functions  # + functions_openCV
+functions = functions_atari + statistical_functions + functions_openCV
 
 
 # np.seterr(all="raise")
@@ -181,8 +185,8 @@ def GaussianBlur(inp1, inp2, parameter):
     ksizex = int(parameter * inp1.shape[0])
     if ksizex % 2 == 0:
         ksizex += 1
-    ksizey = int(parameter * inp1.shape[1])
 
+    ksizey = int(parameter * inp1.shape[1])
     if ksizey % 2 == 0:
         ksizey += 1
 
@@ -1359,3 +1363,312 @@ def Sobely2(inp1, inp2, parameter):
     sobel = sobel.get()
 
     return sobel
+
+
+#def threshold1(inp1, inp2, parameter):
+#    """
+#    Go over inp1, replace each pixel with white if it has a higher value
+#    than parameter, with black otherwise.
+#
+#    Parameters
+#    ----------
+#    inp1 : float or np.ndarray
+#        First input value.
+#    inp2 : float or np.ndarray
+#        Second input value. Not actually used by this function.
+#    parameter : float
+#        Value to compare the pixels to.
+#
+#    Return
+#    ------
+#    black_and_white : float or np.ndarray
+#        inp1 after the pixels were replaced.
+#    """
+#
+#    if not isinstance(inp1, np.ndarray):
+#        return inp1
+#
+#    black_and_white = cv2.threshold(inp1, parameter, 
+
+def smoothMedian1(inp1, inp2, parameter):
+    """
+    Blur inp1 using a kernel that replaces the pixel values
+    with their median.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Used to calculate kernel size.
+
+    Return
+    ------
+    smoothed : float or np.ndarray
+        Blurred image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+
+    if parameter < 0:
+        parameter *= -1
+    shape = min(inp1.shape[0], inp1.shape[1])
+    ksize = int(parameter * shape)
+    if ksize % 2 == 0:
+        ksize += 1
+
+
+    smoothed = cv2.medianBlur(inp1, ksize=ksize)
+
+    return smoothed
+
+def smoothMedian2(inp1, inp2, parameter):
+    """
+    Blur inp2 using a kernel that replaces the pixel values
+    with their median.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Used to calculate kernel size.
+
+    Return
+    ------
+    smoothed : float or np.ndarray
+        Blurred image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+
+    if parameter < 0:
+        parameter *= -1
+    shape = min(inp2.shape[0], inp2.shape[1])
+    ksize = int(parameter * shape)
+    if ksize % 2 == 0:
+        ksize += 1
+
+    smoothed = cv2.medianBlur(inp2, ksize=ksize)
+
+    return smoothed
+
+def smoothBilateral1(inp1, inp2, parameter):
+    """
+    Blur inp1 using a bilateral filter.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Used to determine sigma values.
+
+    Return
+    ------
+    smoothed : float or np.ndarray
+        Blurred image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+
+    sigma = int(parameter * 175)
+    #Note: 175 chosen because the opencv documentation call values > 150 large
+    #https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html?highlight=bilateralfilter#bilateralfilter
+    
+    inp1 = np.float32(inp1)
+    
+    smoothed = cv2.bilateralFilter(inp1, d=5, sigmaColor=sigma, sigmaSpace=sigma)
+
+    smoothed = np.uint8(smoothed)
+
+    return smoothed
+
+def smoothBilateral2(inp1, inp2, parameter):
+    """
+    Blur inp2 using a bilateral filter.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Used to determine sigma values.
+
+    Return
+    ------
+    smoothed : float or np.ndarray
+        Blurred image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    if parameter < 0:
+        parameter *= -1
+
+    sigma = int(parameter * 175)
+    #Note: 175 chosen because the opencv documentation call values > 150 large
+    #https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html?highlight=bilateralfilter#bilateralfilter
+    
+    inp2 = np.float32(inp2)
+    
+    smoothed = cv2.bilateralFilter(inp2, d=5, sigmaColor=sigma, sigmaSpace=sigma)
+
+    smoothed = np.uint8(smoothed)
+
+    return smoothed
+
+def smoothBlur1(inp1, inp2, parameter):
+    """
+    Blur inp1 using a normalized box filter.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Used to determine kernel size.
+
+    Return
+    ------
+    smoothed : float or np.ndarray
+        Blurred image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+
+    if parameter < 0:
+        parameter *= -1
+
+    ksizex = int(parameter * inp1.shape[0])
+    if ksizex % 2 == 0:
+        ksizex += 1
+
+    ksizey = int(parameter * inp1.shape[1])
+    if ksizey % 2 == 0:
+        ksizey += 1
+
+    smoothed = cv2.blur(inp1, (ksizex,ksizey))
+
+    return smoothed
+
+def smoothBlur2(inp1, inp2, parameter):
+    """
+    Blur inp2 using a normalized box filter.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Used to determine kernel size.
+
+    Return
+    ------
+    smoothed : float or np.ndarray
+        Blurred image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+
+    if parameter < 0:
+        parameter *= -1
+
+    ksizex = int(parameter * inp2.shape[0])
+    if ksizex % 2 == 0:
+        ksizex += 1
+
+    ksizey = int(parameter * inp2.shape[1])
+    if ksizey % 2 == 0:
+        ksizey += 1
+
+    smoothed = cv2.blur(inp2, (ksizex,ksizey))
+
+    return smoothed
+
+def unsharpen1(inp1, inp2, parameter):
+    """
+    Apply the unsharpen operation to inp1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Weight of substraction.
+    
+    Result
+    ------
+    sharp : float or np.ndarray
+        Unsharpened image.
+    """
+
+    
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    inp1 = np.float32(inp1)
+    laplacian = cv2.Laplacian(inp1,cv2.CV_32F)
+    gray = median_filter(inp1, 1) #median filter to counteract noise of laplacian
+
+    sharp = gray - parameter * laplacian
+
+    return sharp
+
+def unsharpen2(inp1, inp2, parameter):
+    """
+    Apply the unsharpen operation to inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Weight of substraction.
+    
+    Result
+    ------
+    sharp : float or np.ndarray
+        Unsharpened image.
+    """
+
+    
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    inp2 = np.float32(inp2)
+    laplacian = cv2.Laplacian(inp2,cv2.CV_32F)
+    gray = median_filter(inp2, 1) #median filter to counteract noise of laplacian
+
+    sharp = gray - parameter * laplacian
+
+    return sharp
