@@ -46,7 +46,12 @@ functions_openCV = ["GaussianBlur",
                     "Sobely1", "Sobely2",
                     "smoothMedian1", "smoothMedian2",
                     "smoothBilateral1", "smoothBilateral2",
-                    "unsharpen1", "unsharpen2"
+                    "unsharpen1", "unsharpen2"#,
+                    "shiftLeft1", "shiftLeft2",
+                    "shiftRight1", "shiftRight2",
+                    "shiftUp1", "shiftUp2",
+                    "shiftDown1", "shiftDown2",
+                    "shift1", "shift2"
                     ]
 
 functions = functions_atari + statistical_functions + functions_openCV
@@ -178,6 +183,11 @@ def GaussianBlur(inp1, inp2, parameter):
 
     if not isinstance(inp1, np.ndarray):
         return inp1
+
+    if len(inp1.shape) != 2:
+        print(inp1.shape)
+        print(inp1)
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
     if parameter < 0:
         parameter *= -1
@@ -1402,7 +1412,7 @@ def smoothMedian1(inp1, inp2, parameter):
     inp2 : float or np.ndarray
         Second input value. Not actually used by this function.
     parameter : float
-        Used to calculate kernel size.
+        Not actually used by this function.
 
     Return
     ------
@@ -1414,15 +1424,17 @@ def smoothMedian1(inp1, inp2, parameter):
         return inp1
 
 
-    if parameter < 0:
-        parameter *= -1
-    shape = min(inp1.shape[0], inp1.shape[1])
-    ksize = int(parameter * shape)
-    if ksize % 2 == 0:
-        ksize += 1
+    #if parameter < 0:
+    #    parameter *= -1
+    #shape = min(inp1.shape[0], inp1.shape[1])
+    #ksize = int(parameter * shape)
+    #if ksize % 2 == 0:
+    #    ksize += 1
 
 
-    smoothed = cv2.medianBlur(inp1, ksize=ksize)
+    mat_array_1 = cv2.UMat(np.float32(inp1))
+    smoothed = cv2.medianBlur(mat_array_1, ksize=3)
+    smoothed = smoothed.get()
 
     return smoothed
 
@@ -1438,7 +1450,7 @@ def smoothMedian2(inp1, inp2, parameter):
     inp2 : float or np.ndarray
         Second input value.
     parameter : float
-        Used to calculate kernel size.
+        Not actually used by this function
 
     Return
     ------
@@ -1450,14 +1462,16 @@ def smoothMedian2(inp1, inp2, parameter):
         return inp2
 
 
-    if parameter < 0:
-        parameter *= -1
-    shape = min(inp2.shape[0], inp2.shape[1])
-    ksize = int(parameter * shape)
-    if ksize % 2 == 0:
-        ksize += 1
+    #if parameter < 0:
+    #    parameter *= -1
+    #shape = min(inp2.shape[0], inp2.shape[1])
+    #ksize = int(parameter * shape)
+    #if ksize % 2 == 0:
+    #    ksize += 1
 
-    smoothed = cv2.medianBlur(inp2, ksize=ksize)
+    mat_array_2 = cv2.UMat(np.float32(inp2))
+    smoothed = cv2.medianBlur(mat_array_2, ksize=3)
+    smoothed = smoothed.get()
 
     return smoothed
 
@@ -1624,7 +1638,7 @@ def unsharpen1(inp1, inp2, parameter):
     parameter : float
         Weight of substraction.
     
-    Result
+    Return
     ------
     sharp : float or np.ndarray
         Unsharpened image.
@@ -1655,7 +1669,7 @@ def unsharpen2(inp1, inp2, parameter):
     parameter : float
         Weight of substraction.
     
-    Result
+    Return
     ------
     sharp : float or np.ndarray
         Unsharpened image.
@@ -1672,3 +1686,342 @@ def unsharpen2(inp1, inp2, parameter):
     sharp = gray - parameter * laplacian
 
     return sharp
+
+def shiftLeft1(inp1, inp2, parameter):
+    """
+    Perform a circular left shift on inp1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+    if len(inp1.shape) == 1:
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+
+    dist = int(parameter * inp1.shape[1])
+
+    left = inp1[:,:dist]
+    right = inp1[:, dist:]
+
+    shifted = np.append(right, left, axis=1)
+
+    return shifted
+    
+
+def shiftLeft2(inp1, inp2, parameter):
+    """
+    Perform a circular left shift on inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    if len(inp2.shape) == 1:
+        return inp2
+
+    if parameter < 0:
+        parameter *= -1
+
+    dist = int(parameter * inp2.shape[1])
+
+    left = inp2[:,:dist]
+    right = inp2[:, dist:]
+
+    shifted = np.append(right, left, axis=1)
+
+    return shifted
+
+def shiftRight1(inp1, inp2, parameter):
+    """
+    Perform a circular right shift on inp1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+    if len(inp1.shape) == 1:
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+
+    dist = inp1.shape[1] - int(parameter * inp1.shape[1])
+
+    left = inp1[:,:dist]
+    right = inp1[:, dist:]
+
+    shifted = np.append(right, left, axis=1)
+
+    return shifted
+    
+
+def shiftRight2(inp1, inp2, parameter):
+    """
+    Perform a circular left shift on inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+    if len(inp2.shape) == 1:
+        return inp2
+
+    if parameter < 0:
+        parameter *= -1
+    
+    dist = inp2.shape[1] - int(parameter * inp2.shape[1])
+
+    left = inp2[:,:dist]
+    right = inp2[:, dist:]
+
+    shifted = np.append(right, left, axis=1)
+
+    return shifted
+
+def shiftUp1(inp1, inp2, parameter):
+    """
+    Perform a circular upward shift on inp1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+
+    dist = int(parameter * inp1.shape[0])
+
+    upper = inp1[:dist]
+    lower = inp1[dist:]
+
+    shifted = np.append(lower, upper, axis=0)
+
+    return shifted
+    
+
+def shiftUp2(inp1, inp2, parameter):
+    """
+    Perform a circular left shift on inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    if parameter < 0:
+        parameter *= -1
+    
+    dist = int(parameter * inp2.shape[0])
+
+    upper = inp2[:dist]
+    lower = inp2[dist:]
+
+    shifted = np.append(lower, upper, axis=0)
+
+    return shifted
+
+def shiftDown1(inp1, inp2, parameter):
+    """
+    Perform a circular downward shift on inp1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+
+    dist = inp1.shape[1] - int(parameter * inp1.shape[0])
+
+    upper = inp1[:dist]
+    lower = inp1[dist:]
+
+    shifted = np.append(lower, upper, axis=0)
+
+    return shifted
+    
+
+def shiftDown2(inp1, inp2, parameter):
+    """
+    Perform a circular left shift on inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    if parameter < 0:
+        parameter *= -1
+    
+    dist = inp2.shape[1] - int(parameter * inp2.shape[0])
+
+    upper = inp2[:dist]
+    lower = inp2[dist:]
+
+    shifted = np.append(lower, upper, axis=0)
+
+    return shifted
+
+def shift1(inp1, inp2, parameter):
+    """
+    Perform a circular left and upwards shift on inp1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    shifted = shiftLeft1(inp1, inp2, parameter)
+    shifted = shiftUp1(inp1, inp2, parameter)
+
+    return shifted
+
+def shift2(inp1, inp2, parameter):
+    """
+    Perform a circular left and upwards shift on inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Determines, how far the image is shifted.
+
+    Return
+    ------
+    shifted : float or np.ndarray
+        Shifted image.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    shifted = shiftLeft2(inp1, inp2, parameter)
+    shifted = shiftUp2(inp1, inp2, parameter)
+
+    return shifted
