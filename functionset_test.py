@@ -1,4 +1,5 @@
 import random
+import sys
 
 import numpy as np
 import pytest
@@ -94,6 +95,9 @@ def test_length_of_returns():
 
     print(f"input shape is {test_matrix.shape}")
 
+    if "-s" not in sys.argv:
+        return
+
     for fname in fst.functions:
         if fname.startswith("_"):
             continue
@@ -103,7 +107,7 @@ def test_length_of_returns():
         for t_inp1, t_inp2 in tests:
             try:
                 res = func(t_inp1, t_inp2, test_parameter)
-
+                
                 print(f"{fname}({type(t_inp1)}, {type(t_inp2)}) => {np.array(res).shape}")
 
             except Exception:
