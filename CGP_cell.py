@@ -35,7 +35,7 @@ class CGP_cell:
     """
 
     def __init__(self, genome, program):
-        
+
         # get inputs (we don't want to count output nodes as possible input nodes)
         inp1 = round(genome[0] * (program.num_cells - 1 - cc.N_OUTPUT_NODES))
         inp2 = round(genome[1] * (program.num_cells - 1 - cc.N_OUTPUT_NODES))
@@ -71,6 +71,32 @@ class CGP_cell:
 
         if self.function.__name__ not in function_set.statistical_functions:
             self.last_value = np.clip(self.last_value, -1, 1)
+
+        # set maximum size
+        max_res_size = 3_000_000
+        while self.last_value.size >= max_res_size:
+
+            # just get current shape and see how much will the size change if we change the highest dimension
+            new_shape = np.array(self.last_value.shape)
+            i_max_shape = np.argmax(new_shape)
+
+            new_shape[i_max_shape] -= 1
+            difference = self.last_value.size - np.prod(new_shape)
+
+            # now calculate actually how many times we need to "apply" that difference for us to have <= max_res_size
+            amount_to_go_down = self.last_value.size - max_res_size
+
+            n_times_we_need_to_apply_difference = int(
+                amount_to_go_down/difference)
+
+            if n_times_we_need_to_apply_difference <= 0:
+                # we can't have a negative nor 0 dimension, so we just leave it at one and
+                # next iteration we fix other dimensions
+                n_times_we_need_to_apply_difference = 1
+
+            new_shape[i_max_shape] = n_times_we_need_to_apply_difference
+
+            self.last_value = np.resize(self.last_value, new_shape)
 
 
 class Output_cell(CGP_cell):
