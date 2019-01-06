@@ -29,10 +29,15 @@ def test_functionset_accept_type():
         func = getattr(fst, fname)
 
         test_matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        test_matrix2 = np.array([[11, 22, 33, 44, 41], [55, 66, 77, 88, 85], [
+                                99, 100, 111, 112, 199], [113, 114, 115, 116, 133]])
         test_scalar = 42
         test_parameter = 0.5
 
         tests = [[test_matrix, test_matrix],
+                 [test_matrix, test_matrix2],
+                 [test_matrix2, test_matrix],
+                 [test_matrix2, test_matrix2],
                  [test_scalar, test_matrix],
                  [test_matrix, test_scalar],
                  [test_scalar, test_scalar],
@@ -48,11 +53,14 @@ def test_functionset_accept_type():
 
                 if isinstance(res, np.ndarray) and len(res) == 0:
                     pytest.fail(
-                        f"it seems that function '{fname}' returns an empty array for inputs of types ({type(t_inp1)}, {type(t_inp2)}).")
+                        f"it seems that function '{fname}' returns an empty array for inputs of types ({type(t_inp1)}, {type(t_inp2)}). "
+                        f"With the respective shapes {np.array(t_inp1).shape} and {np.array(t_inp2).shape}")
 
             except Exception as err:
                 pytest.fail(
-                    f"Function '{fname}' seems to fail when the inputs are ({type(t_inp1)}, {type(t_inp2)}) \nwith the following exception:\n{err}")
+                    f"Function '{fname}' seems to fail when the inputs are ({type(t_inp1)}, {type(t_inp2)}) "
+                    f"With the respective shapes {np.array(t_inp1).shape} and {np.array(t_inp2).shape}"
+                    f"\nwith the following exception:\n{err}")
 
 
 def test_individual_generation_size():
@@ -107,8 +115,9 @@ def test_length_of_returns():
         for t_inp1, t_inp2 in tests:
             try:
                 res = func(t_inp1, t_inp2, test_parameter)
-                
-                print(f"{fname}({type(t_inp1)}, {type(t_inp2)}) => {np.array(res).shape}")
+
+                print(
+                    f"{fname}({type(t_inp1)}, {type(t_inp2)}) => {np.array(res).shape}")
 
             except Exception:
                 pass
