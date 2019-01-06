@@ -40,19 +40,22 @@ statistical_functions = [
     "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1"
 ]
 
-functions_openCV = ["GaussianBlur",
-                    "Sobel1", "Sobel2",
-                    "Sobelx1", "Sobelx2",
-                    "Sobely1", "Sobely2",
-                    "smoothMedian1", "smoothMedian2",
-                    "smoothBilateral1", "smoothBilateral2",
-                    "unsharpen1", "unsharpen2",
-                    "shiftLeft1", "shiftLeft2",
-                    "shiftRight1", "shiftRight2",
-                    "shiftUp1", "shiftUp2",
-                    "shiftDown1", "shiftDown2",
-                    "shift1", "shift2"
-                    ]
+functions_openCV = [
+    "GaussianBlur",
+    "Sobel1", "Sobel2",
+    "Sobelx1", "Sobelx2",
+    "Sobely1", "Sobely2",
+    "smoothMedian1", "smoothMedian2",
+    "smoothBilateral1", "smoothBilateral2",
+    "unsharpen1", "unsharpen2",
+    "shiftLeft1", "shiftLeft2",
+    "shiftRight1", "shiftRight2",
+    "shiftUp1", "shiftUp2",
+    "shiftDown1", "shiftDown2",
+    "shift1", "shift2",
+    "erosion1", "erosion2",
+    "dilation1", "dilation2",
+]
 
 functions = functions_atari + statistical_functions + functions_openCV
 
@@ -1375,7 +1378,7 @@ def Sobely2(inp1, inp2, parameter):
     return sobel
 
 
-#def threshold1(inp1, inp2, parameter):
+# def threshold1(inp1, inp2, parameter):
 #    """
 #    Go over inp1, replace each pixel with white if it has a higher value
 #    than parameter, with black otherwise.
@@ -1398,7 +1401,7 @@ def Sobely2(inp1, inp2, parameter):
 #    if not isinstance(inp1, np.ndarray):
 #        return inp1
 #
-#    black_and_white = cv2.threshold(inp1, parameter, 
+#    black_and_white = cv2.threshold(inp1, parameter,
 
 def smoothMedian1(inp1, inp2, parameter):
     """
@@ -1423,20 +1426,19 @@ def smoothMedian1(inp1, inp2, parameter):
     if not isinstance(inp1, np.ndarray):
         return inp1
 
-
-    #if parameter < 0:
+    # if parameter < 0:
     #    parameter *= -1
     #shape = min(inp1.shape[0], inp1.shape[1])
     #ksize = int(parameter * shape)
-    #if ksize % 2 == 0:
+    # if ksize % 2 == 0:
     #    ksize += 1
-
 
     mat_array_1 = cv2.UMat(np.float32(inp1))
     smoothed = cv2.medianBlur(mat_array_1, ksize=3)
     smoothed = smoothed.get()
 
     return smoothed
+
 
 def smoothMedian2(inp1, inp2, parameter):
     """
@@ -1461,12 +1463,11 @@ def smoothMedian2(inp1, inp2, parameter):
     if not isinstance(inp2, np.ndarray):
         return inp2
 
-
-    #if parameter < 0:
+    # if parameter < 0:
     #    parameter *= -1
     #shape = min(inp2.shape[0], inp2.shape[1])
     #ksize = int(parameter * shape)
-    #if ksize % 2 == 0:
+    # if ksize % 2 == 0:
     #    ksize += 1
 
     mat_array_2 = cv2.UMat(np.float32(inp2))
@@ -1474,6 +1475,7 @@ def smoothMedian2(inp1, inp2, parameter):
     smoothed = smoothed.get()
 
     return smoothed
+
 
 def smoothBilateral1(inp1, inp2, parameter):
     """
@@ -1501,16 +1503,18 @@ def smoothBilateral1(inp1, inp2, parameter):
         parameter *= -1
 
     sigma = int(parameter * 175)
-    #Note: 175 chosen because the opencv documentation call values > 150 large
-    #https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html?highlight=bilateralfilter#bilateralfilter
-    
+    # Note: 175 chosen because the opencv documentation call values > 150 large
+    # https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html?highlight=bilateralfilter#bilateralfilter
+
     inp1 = np.float32(inp1)
-    
-    smoothed = cv2.bilateralFilter(inp1, d=5, sigmaColor=sigma, sigmaSpace=sigma)
+
+    smoothed = cv2.bilateralFilter(
+        inp1, d=5, sigmaColor=sigma, sigmaSpace=sigma)
 
     smoothed = np.uint8(smoothed)
 
     return smoothed
+
 
 def smoothBilateral2(inp1, inp2, parameter):
     """
@@ -1538,16 +1542,18 @@ def smoothBilateral2(inp1, inp2, parameter):
         parameter *= -1
 
     sigma = int(parameter * 175)
-    #Note: 175 chosen because the opencv documentation call values > 150 large
-    #https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html?highlight=bilateralfilter#bilateralfilter
-    
+    # Note: 175 chosen because the opencv documentation call values > 150 large
+    # https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html?highlight=bilateralfilter#bilateralfilter
+
     inp2 = np.float32(inp2)
-    
-    smoothed = cv2.bilateralFilter(inp2, d=5, sigmaColor=sigma, sigmaSpace=sigma)
+
+    smoothed = cv2.bilateralFilter(
+        inp2, d=5, sigmaColor=sigma, sigmaSpace=sigma)
 
     smoothed = np.uint8(smoothed)
 
     return smoothed
+
 
 def smoothBlur1(inp1, inp2, parameter):
     """
@@ -1571,7 +1577,6 @@ def smoothBlur1(inp1, inp2, parameter):
     if not isinstance(inp1, np.ndarray):
         return inp1
 
-
     if parameter < 0:
         parameter *= -1
 
@@ -1583,9 +1588,10 @@ def smoothBlur1(inp1, inp2, parameter):
     if ksizey % 2 == 0:
         ksizey += 1
 
-    smoothed = cv2.blur(inp1, (ksizex,ksizey))
+    smoothed = cv2.blur(inp1, (ksizex, ksizey))
 
     return smoothed
+
 
 def smoothBlur2(inp1, inp2, parameter):
     """
@@ -1609,7 +1615,6 @@ def smoothBlur2(inp1, inp2, parameter):
     if not isinstance(inp2, np.ndarray):
         return inp2
 
-
     if parameter < 0:
         parameter *= -1
 
@@ -1621,9 +1626,10 @@ def smoothBlur2(inp1, inp2, parameter):
     if ksizey % 2 == 0:
         ksizey += 1
 
-    smoothed = cv2.blur(inp2, (ksizex,ksizey))
+    smoothed = cv2.blur(inp2, (ksizex, ksizey))
 
     return smoothed
+
 
 def unsharpen1(inp1, inp2, parameter):
     """
@@ -1637,24 +1643,25 @@ def unsharpen1(inp1, inp2, parameter):
         Second input value. Not actually used by this function.
     parameter : float
         Weight of substraction.
-    
+
     Return
     ------
     sharp : float or np.ndarray
         Unsharpened image.
     """
 
-    
     if not isinstance(inp1, np.ndarray):
         return inp1
 
     inp1 = np.float32(inp1)
-    laplacian = cv2.Laplacian(inp1,cv2.CV_32F)
-    gray = median_filter(inp1, 1) #median filter to counteract noise of laplacian
+    laplacian = cv2.Laplacian(inp1, cv2.CV_32F)
+    # median filter to counteract noise of laplacian
+    gray = median_filter(inp1, 1)
 
     sharp = gray - parameter * laplacian
 
     return sharp
+
 
 def unsharpen2(inp1, inp2, parameter):
     """
@@ -1668,24 +1675,25 @@ def unsharpen2(inp1, inp2, parameter):
         Second input value.
     parameter : float
         Weight of substraction.
-    
+
     Return
     ------
     sharp : float or np.ndarray
         Unsharpened image.
     """
 
-    
     if not isinstance(inp2, np.ndarray):
         return inp2
 
     inp2 = np.float32(inp2)
-    laplacian = cv2.Laplacian(inp2,cv2.CV_32F)
-    gray = median_filter(inp2, 1) #median filter to counteract noise of laplacian
+    laplacian = cv2.Laplacian(inp2, cv2.CV_32F)
+    # median filter to counteract noise of laplacian
+    gray = median_filter(inp2, 1)
 
     sharp = gray - parameter * laplacian
 
     return sharp
+
 
 def shiftLeft1(inp1, inp2, parameter):
     """
@@ -1716,13 +1724,13 @@ def shiftLeft1(inp1, inp2, parameter):
 
     dist = int(parameter * inp1.shape[1])
 
-    left = inp1[:,:dist]
+    left = inp1[:, :dist]
     right = inp1[:, dist:]
 
     shifted = np.append(right, left, axis=1)
 
     return shifted
-    
+
 
 def shiftLeft2(inp1, inp2, parameter):
     """
@@ -1754,12 +1762,13 @@ def shiftLeft2(inp1, inp2, parameter):
 
     dist = int(parameter * inp2.shape[1])
 
-    left = inp2[:,:dist]
+    left = inp2[:, :dist]
     right = inp2[:, dist:]
 
     shifted = np.append(right, left, axis=1)
 
     return shifted
+
 
 def shiftRight1(inp1, inp2, parameter):
     """
@@ -1790,13 +1799,13 @@ def shiftRight1(inp1, inp2, parameter):
 
     dist = inp1.shape[1] - int(parameter * inp1.shape[1])
 
-    left = inp1[:,:dist]
+    left = inp1[:, :dist]
     right = inp1[:, dist:]
 
     shifted = np.append(right, left, axis=1)
 
     return shifted
-    
+
 
 def shiftRight2(inp1, inp2, parameter):
     """
@@ -1824,15 +1833,16 @@ def shiftRight2(inp1, inp2, parameter):
 
     if parameter < 0:
         parameter *= -1
-    
+
     dist = inp2.shape[1] - int(parameter * inp2.shape[1])
 
-    left = inp2[:,:dist]
+    left = inp2[:, :dist]
     right = inp2[:, dist:]
 
     shifted = np.append(right, left, axis=1)
 
     return shifted
+
 
 def shiftUp1(inp1, inp2, parameter):
     """
@@ -1867,7 +1877,7 @@ def shiftUp1(inp1, inp2, parameter):
     shifted = np.append(lower, upper, axis=0)
 
     return shifted
-    
+
 
 def shiftUp2(inp1, inp2, parameter):
     """
@@ -1893,7 +1903,7 @@ def shiftUp2(inp1, inp2, parameter):
 
     if parameter < 0:
         parameter *= -1
-    
+
     dist = int(parameter * inp2.shape[0])
 
     upper = inp2[:dist]
@@ -1902,6 +1912,7 @@ def shiftUp2(inp1, inp2, parameter):
     shifted = np.append(lower, upper, axis=0)
 
     return shifted
+
 
 def shiftDown1(inp1, inp2, parameter):
     """
@@ -1936,7 +1947,7 @@ def shiftDown1(inp1, inp2, parameter):
     shifted = np.append(lower, upper, axis=0)
 
     return shifted
-    
+
 
 def shiftDown2(inp1, inp2, parameter):
     """
@@ -1962,7 +1973,7 @@ def shiftDown2(inp1, inp2, parameter):
 
     if parameter < 0:
         parameter *= -1
-    
+
     dist = inp2.shape[1] - int(parameter * inp2.shape[0])
 
     upper = inp2[:dist]
@@ -1971,6 +1982,7 @@ def shiftDown2(inp1, inp2, parameter):
     shifted = np.append(lower, upper, axis=0)
 
     return shifted
+
 
 def shift1(inp1, inp2, parameter):
     """
@@ -1999,6 +2011,7 @@ def shift1(inp1, inp2, parameter):
 
     return shifted
 
+
 def shift2(inp1, inp2, parameter):
     """
     Perform a circular left and upwards shift on inp2.
@@ -2025,3 +2038,53 @@ def shift2(inp1, inp2, parameter):
     shifted = shiftUp2(inp1, inp2, parameter)
 
     return shifted
+
+
+def erosion1(inp1, inp2, parameter):
+    # if inp1 is not array or inp1 is not 2 dimensional
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp2
+
+    parameter = (parameter + 1) / 2  # convert to [0, 1] range
+
+    ksizex = np.round(parameter * inp1.shape[0])
+    if ksizex % 2 == 0:
+        ksizex += 1
+
+    ksizey = np.round(parameter * inp1.shape[1])
+    if ksizey % 2 == 0:
+        ksizey += 1
+
+    kernel = np.ones((ksizex, ksizey), np.uint8)
+    erosion = cv2.erode(inp1, kernel, iterations=1)
+
+    return erosion
+
+
+def erosion2(inp1, inp2, parameter):
+    return erosion1(inp2, inp1, parameter)
+
+
+def dilation1(inp1, inp2, parameter):
+    # if inp1 is not array or inp1 is not 2 dimensional
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp2
+
+    parameter = (parameter + 1) / 2  # convert to [0, 1] range
+
+    ksizex = np.round(parameter * inp1.shape[0])
+    if ksizex % 2 == 0:
+        ksizex += 1
+
+    ksizey = np.round(parameter * inp1.shape[1])
+    if ksizey % 2 == 0:
+        ksizey += 1
+
+    kernel = np.ones((ksizex, ksizey), np.uint8)
+    dilation = cv2.dilate(inp1, kernel, iterations=1)
+
+    return dilation
+
+
+def dilation2(inp1, inp2, parameter):
+    return dilation1(inp2, inp1, parameter)
