@@ -55,11 +55,11 @@ functions_openCV = [
     "shift1", "shift2",
     "erosion1", "erosion2",
     "dilation1", "dilation2",
-    "threshold1", "threshold2"
+    "threshold1", "threshold2",
+    "reScale1", "reScale2"
 ]
 
 functions = functions_atari + statistical_functions + functions_openCV
-
 
 # np.seterr(all="raise")
 np.seterr(all="ignore")
@@ -2113,7 +2113,7 @@ def erosion2(inp1, inp2, parameter):
 def dilation1(inp1, inp2, parameter):
     # if inp1 is not array or inp1 is not 2 dimensional
     if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
-        return inp2
+        return inp1
 
     parameter = (parameter + 1) / 2  # convert to [0, 1] range
 
@@ -2133,3 +2133,57 @@ def dilation1(inp1, inp2, parameter):
 
 def dilation2(inp1, inp2, parameter):
     return dilation1(inp2, inp1, parameter)
+
+def reScale1(inp1, inp2, parameter):
+    """
+    Downscale inp1 by parameter, then upscale again.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Scale factor.
+
+    Return
+    ------
+    rescaled : float or np.ndarray
+        Rescaled image.
+    """
+
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+
+    inp1 = np.float32(inp1)
+    
+    scaled = cv2.resize(inp1, (0,0), fx=parameter, fy=parameter)
+
+    rescaled = cv2.resize(scaled, inp1.shape)
+
+    return rescaled
+    
+def reScale2(inp1, inp2, parameter):
+    """
+    Downscale inp2 by parameter, then upscale again.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Scale factor.
+
+    Return
+    ------
+    rescaled : float or np.ndarray
+        Rescaled image.
+    """
+
+    return reScale1(inp2, inp1, parameter)
