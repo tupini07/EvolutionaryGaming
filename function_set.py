@@ -56,7 +56,8 @@ functions_openCV = [
     "erosion1", "erosion2",
     "dilation1", "dilation2",
     "threshold1", "threshold2",
-    "reScale1", "reScale2"
+    "reScale1", "reScale2",
+    "gabor1", "gabor2"
 ]
 
 functions = functions_atari + statistical_functions + functions_openCV
@@ -2187,3 +2188,61 @@ def reScale2(inp1, inp2, parameter):
     """
 
     return reScale1(inp2, inp1, parameter)
+
+def gabor1(inp1, inp2, parameter):
+    """
+    Apply a gabor filter to inp1.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Used to define the orientation of the filter.
+
+    Return
+    ------
+    filtered : float or np.ndarray
+        Filtered image.
+    """
+
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+
+    theta = parameter * 180
+
+    kernel = cv2.getGaborKernel((3,3), 4, theta, 10, 0.5, 0, ktype=cv2.CV_32F)
+    #values like in https://cvtuts.wordpress.com/2014/04/27/gabor-filters-a-practical-overview/
+
+    inp1 = np.float32(inp1)
+    filtered = cv2.filter2D(inp1, -1, kernel)
+
+    return filtered
+
+def gabor2(inp1, inp2, parameter):
+    """
+    Apply a gabor filter to inp2.
+    
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Used to define the orientation of the filter.
+
+    Return
+    ------
+    filtered : float or np.ndarray
+        Filtered image.
+    """
+
+    filtered = gabor1(inp2, inp1, parameter)
+
+    return filtered
