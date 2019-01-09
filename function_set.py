@@ -61,8 +61,8 @@ functions_openCV = [
     "resizeThenGabor1", "resizeThenGabor2"
 ]
 
-#functions = functions_atari + statistical_functions + functions_openCV
-functions = ["resizeThenGabor1"]
+functions = functions_atari + statistical_functions + functions_openCV
+
 #functions = ["reScale1"]
 # np.seterr(all="raise")
 np.seterr(all="ignore")
