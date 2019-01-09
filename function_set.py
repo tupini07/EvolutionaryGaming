@@ -55,6 +55,7 @@ functions_openCV = [
     "shift1", "shift2",
     "erosion1", "erosion2",
     "dilation1", "dilation2",
+    "threshold1", "threshold2"
 ]
 
 functions = functions_atari + statistical_functions + functions_openCV
@@ -203,6 +204,7 @@ def GaussianBlur(inp1, inp2, parameter):
     if ksizey % 2 == 0:
         ksizey += 1
 
+    inp1 = np.float32(inp1)
     blurred = cv2.GaussianBlur(inp1, (ksizex, ksizey), 0, sigmaY=0)
 
     return blurred
@@ -1378,30 +1380,73 @@ def Sobely2(inp1, inp2, parameter):
     return sobel
 
 
-# def threshold1(inp1, inp2, parameter):
-#    """
-#    Go over inp1, replace each pixel with white if it has a higher value
-#    than parameter, with black otherwise.
-#
-#    Parameters
-#    ----------
-#    inp1 : float or np.ndarray
-#        First input value.
-#    inp2 : float or np.ndarray
-#        Second input value. Not actually used by this function.
-#    parameter : float
-#        Value to compare the pixels to.
-#
-#    Return
-#    ------
-#    black_and_white : float or np.ndarray
-#        inp1 after the pixels were replaced.
-#    """
-#
-#    if not isinstance(inp1, np.ndarray):
-#        return inp1
-#
-#    black_and_white = cv2.threshold(inp1, parameter,
+def threshold1(inp1, inp2, parameter):
+    """
+    Go over inp1, replace each pixel with 1 if it has a higher value
+    than parameter, with 0 otherwise.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Value to compare the pixels to.
+
+    Return
+    ------
+    black_and_white : float or np.ndarray
+        inp1 after the pixels were replaced.
+    """
+
+    if not isinstance(inp1, np.ndarray):
+        return inp1
+
+    with np.nditer(inp1, op_flags=['readwrite']) as it:
+        for x in it:
+            if x > parameter:
+                x[...] = -1
+            else:
+                x[...] = 1
+
+    black_and_white = inp1
+                
+    return inp1
+
+def threshold2(inp1, inp2, parameter):
+    """
+    Go over inp2, replace each pixel with 1 if it has a higher value
+    than parameter, with 0 otherwise.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Value to compare the pixels to.
+
+    Return
+    ------
+    black_and_white : float or np.ndarray
+        inp2 after the pixels were replaced.
+    """
+
+    if not isinstance(inp2, np.ndarray):
+        return inp2
+
+    with np.nditer(inp2, op_flags=['readwrite']) as it:
+        for x in it:
+            if x > parameter:
+                x[...] = -1
+            else:
+                x[...] = 1
+
+    black_and_white = inp2
+                
+    return inp2
 
 def smoothMedian1(inp1, inp2, parameter):
     """
