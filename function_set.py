@@ -57,11 +57,13 @@ functions_openCV = [
     "dilation1", "dilation2",
     "threshold1", "threshold2",
     "reScale1", "reScale2",
-    "gabor1", "gabor2"
+    "gabor1", "gabor2",
+    "resizeThenGabor1", "resizeThenGabor2"
 ]
 
-functions = functions_atari + statistical_functions + functions_openCV
-
+#functions = functions_atari + statistical_functions + functions_openCV
+functions = ["resizeThenGabor1"]
+#functions = ["reScale1"]
 # np.seterr(all="raise")
 np.seterr(all="ignore")
 
@@ -2159,6 +2161,9 @@ def reScale1(inp1, inp2, parameter):
 
     if parameter < 0:
         parameter *= -1
+    if parameter * inp1.shape[0] < 1 or parameter * inp1.shape[1] < 1:
+        #we can't resize to size 0
+        return inp1
 
     inp1 = np.float32(inp1)
     
@@ -2244,5 +2249,63 @@ def gabor2(inp1, inp2, parameter):
     """
 
     filtered = gabor1(inp2, inp1, parameter)
+
+    return filtered
+
+def resizeThenGabor1(inp1, inp2, parameter):
+    """
+    Downscale inp1 and then apply a Gabor filter.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Used to define the orientation of the filter.
+
+    Return
+    ------
+    filtered : float or np.ndarray
+        Filtered image.
+    """
+
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp1
+
+    if parameter < 0:
+        parameter *= -1
+    if parameter * inp1.shape[0] < 1 or parameter * inp1.shape[1] < 1:
+        #we can't resize to size 0
+        return inp1
+
+    inp1 = np.float32(inp1)
+    scaled = cv2.resize(inp1, (0,0), fx=parameter, fy=parameter)
+
+    filtered = gabor1(scaled, inp2, parameter)
+
+    return filtered
+
+def resizeThenGabor2(inp1, inp2, parameter):
+    """
+    Downscale inp2 and then apply a Gabor filter.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Used to define the orientation of the filter.
+
+    Return
+    ------
+    filtered : float or np.ndarray
+        Filtered image.
+    """
+
+    filtered = resizeThenGabor1(inp2, inp1, parameter)
 
     return filtered
