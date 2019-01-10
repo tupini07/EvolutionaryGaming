@@ -60,6 +60,7 @@ functions_openCV = [
     "gabor1", "gabor2",
     "resizeThenGabor1", "resizeThenGabor2",
     "laplace1", "laplace2",
+    "canny1", "canny2",
 ]
 
 functions = functions_atari + statistical_functions + functions_openCV
@@ -2342,3 +2343,33 @@ def laplace1(inp1, inp2, parameter):
 
 def laplace2(inp1, inp2, parameter):
     return laplace1(inp2, inp1, parameter)
+
+
+def canny1(inp1, inp2, parameter):
+    # if inp1 is not array or inp1 is not 2 dimensional
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp2
+
+    parameter = (parameter + 1) / 2  # convert to [0, 1] range
+
+    ksizex = int(np.round(parameter * inp1.shape[0]))
+    if ksizex % 2 == 0:
+        ksizex += 1
+
+    ksizey = int(np.round(parameter * inp1.shape[1]))
+    if ksizey % 2 == 0:
+        ksizey += 1
+
+    kernel = np.ones((ksizex, ksizey), np.uint8)
+
+    lower_threshhold = 1
+    upper_threshold = 2
+
+    return cv2.Canny(inp1.astype(np.uint8),
+                     lower_threshhold,
+                     upper_threshold,
+                     kernel)
+
+
+def canny2(inp1, inp2, parameter):
+    return canny1(inp2, inp1, parameter)
