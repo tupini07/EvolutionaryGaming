@@ -2095,16 +2095,16 @@ def erosion1(inp1, inp2, parameter):
 
     parameter = (parameter + 1) / 2  # convert to [0, 1] range
 
-    ksizex = np.round(parameter * inp1.shape[0])
+    ksizex = int(np.round(parameter * inp1.shape[0]))
     if ksizex % 2 == 0:
         ksizex += 1
 
-    ksizey = np.round(parameter * inp1.shape[1])
+    ksizey = int(np.round(parameter * inp1.shape[1]))
     if ksizey % 2 == 0:
         ksizey += 1
 
     kernel = np.ones((ksizex, ksizey), np.uint8)
-    erosion = cv2.erode(inp1, kernel, iterations=1)
+    erosion = cv2.erode(inp1.astype(np.float32), kernel, iterations=1)
 
     return erosion
 
@@ -2120,16 +2120,16 @@ def dilation1(inp1, inp2, parameter):
 
     parameter = (parameter + 1) / 2  # convert to [0, 1] range
 
-    ksizex = np.round(parameter * inp1.shape[0])
+    ksizex = int(np.round(parameter * inp1.shape[0]))
     if ksizex % 2 == 0:
         ksizex += 1
 
-    ksizey = np.round(parameter * inp1.shape[1])
+    ksizey = int(np.round(parameter * inp1.shape[1]))
     if ksizey % 2 == 0:
         ksizey += 1
 
     kernel = np.ones((ksizex, ksizey), np.uint8)
-    dilation = cv2.dilate(inp1, kernel, iterations=1)
+    dilation = cv2.dilate(inp1.astype(np.float32), kernel, iterations=1)
 
     return dilation
 
