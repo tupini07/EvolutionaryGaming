@@ -61,11 +61,12 @@ functions_openCV = [
     "resizeThenGabor1", "resizeThenGabor2",
     "laplace1", "laplace2",
     "canny1", "canny2",
-    "localNormalize1", "localNormalize2"
+    "localNormalize1", "localNormalize2",
+    "differences1", "differences2",
+    "avgDifferences1", "avgDifferences2"
 ]
 
 functions = functions_atari + statistical_functions + functions_openCV
-
 
 # np.seterr(all="raise")
 np.seterr(all="ignore")
@@ -2433,4 +2434,102 @@ def localNormalize2(inp1, inp2, parameter):
     return normalized
 
     
+def differences1(inp1, inp2, parameter):
+    """
+    Return the gradient of inp1.
 
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    gradient : float or np.ndarray
+        Gradient of inp1.
+    """
+
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp1
+
+    gradient = np.gradient(inp1)
+
+    return gradient
+
+def differences2(inp1, inp2, parameter):
+    """
+    Return the gradient of inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    gradient : float or np.ndarray
+        Gradient of inp2.
+    """
+
+    gradient = differences1(inp2, inp1, parameter)
+
+    return gradient
+
+def avgDifferences1(inp1, inp2, parameter):
+    """
+    Return average of differences1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    avg : float
+        Average of gradient of inp1.
+    """
+
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp1
+
+    gradient = differences1(inp1, inp2, parameter)
+
+    avg = np.mean(gradient)
+
+    return avg
+
+def avgDifferences2(inp1, inp2, parameter):
+    """
+    Return average of differences2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Not actually used by this function.
+
+    Return
+    ------
+    avg : float
+        Average of gradient of inp2.
+    """
+
+    avg = avgDifferences1(inp2, inp1, parameter)
+
+    return avg
