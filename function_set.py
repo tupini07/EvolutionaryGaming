@@ -58,7 +58,8 @@ functions_openCV = [
     "threshold1", "threshold2",
     "reScale1", "reScale2",
     "gabor1", "gabor2",
-    "resizeThenGabor1", "resizeThenGabor2"
+    "resizeThenGabor1", "resizeThenGabor2",
+    "laplace1", "laplace2",
 ]
 
 functions = functions_atari + statistical_functions + functions_openCV
@@ -1414,8 +1415,9 @@ def threshold1(inp1, inp2, parameter):
                 x[...] = 1
 
     black_and_white = inp1
-                
+
     return inp1
+
 
 def threshold2(inp1, inp2, parameter):
     """
@@ -1448,8 +1450,9 @@ def threshold2(inp1, inp2, parameter):
                 x[...] = 1
 
     black_and_white = inp2
-                
+
     return inp2
+
 
 def smoothMedian1(inp1, inp2, parameter):
     """
@@ -2137,6 +2140,7 @@ def dilation1(inp1, inp2, parameter):
 def dilation2(inp1, inp2, parameter):
     return dilation1(inp2, inp1, parameter)
 
+
 def reScale1(inp1, inp2, parameter):
     """
     Downscale inp1 by parameter, then upscale again.
@@ -2162,17 +2166,18 @@ def reScale1(inp1, inp2, parameter):
     if parameter < 0:
         parameter *= -1
     if parameter * inp1.shape[0] < 1 or parameter * inp1.shape[1] < 1:
-        #we can't resize to size 0
+        # we can't resize to size 0
         return inp1
 
     inp1 = np.float32(inp1)
-    
-    scaled = cv2.resize(inp1, (0,0), fx=parameter, fy=parameter)
+
+    scaled = cv2.resize(inp1, (0, 0), fx=parameter, fy=parameter)
 
     rescaled = cv2.resize(scaled, inp1.shape)
 
     return rescaled
-    
+
+
 def reScale2(inp1, inp2, parameter):
     """
     Downscale inp2 by parameter, then upscale again.
@@ -2194,10 +2199,11 @@ def reScale2(inp1, inp2, parameter):
 
     return reScale1(inp2, inp1, parameter)
 
+
 def gabor1(inp1, inp2, parameter):
     """
     Apply a gabor filter to inp1.
-    
+
     Parameters
     ----------
     inp1 : float or np.ndarray
@@ -2221,18 +2227,19 @@ def gabor1(inp1, inp2, parameter):
 
     theta = parameter * 180
 
-    kernel = cv2.getGaborKernel((3,3), 4, theta, 10, 0.5, 0, ktype=cv2.CV_32F)
-    #values like in https://cvtuts.wordpress.com/2014/04/27/gabor-filters-a-practical-overview/
+    kernel = cv2.getGaborKernel((3, 3), 4, theta, 10, 0.5, 0, ktype=cv2.CV_32F)
+    # values like in https://cvtuts.wordpress.com/2014/04/27/gabor-filters-a-practical-overview/
 
     inp1 = np.float32(inp1)
     filtered = cv2.filter2D(inp1, -1, kernel)
 
     return filtered
 
+
 def gabor2(inp1, inp2, parameter):
     """
     Apply a gabor filter to inp2.
-    
+
     Parameters
     ----------
     inp1 : float or np.ndarray
@@ -2251,6 +2258,7 @@ def gabor2(inp1, inp2, parameter):
     filtered = gabor1(inp2, inp1, parameter)
 
     return filtered
+
 
 def resizeThenGabor1(inp1, inp2, parameter):
     """
@@ -2277,15 +2285,16 @@ def resizeThenGabor1(inp1, inp2, parameter):
     if parameter < 0:
         parameter *= -1
     if parameter * inp1.shape[0] < 1 or parameter * inp1.shape[1] < 1:
-        #we can't resize to size 0
+        # we can't resize to size 0
         return inp1
 
     inp1 = np.float32(inp1)
-    scaled = cv2.resize(inp1, (0,0), fx=parameter, fy=parameter)
+    scaled = cv2.resize(inp1, (0, 0), fx=parameter, fy=parameter)
 
     filtered = gabor1(scaled, inp2, parameter)
 
     return filtered
+
 
 def resizeThenGabor2(inp1, inp2, parameter):
     """
@@ -2309,3 +2318,27 @@ def resizeThenGabor2(inp1, inp2, parameter):
     filtered = resizeThenGabor1(inp2, inp1, parameter)
 
     return filtered
+
+
+def laplace1(inp1, inp2, parameter):
+    # if inp1 is not array or inp1 is not 2 dimensional
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp2
+
+    parameter = (parameter + 1) / 2  # convert to [0, 1] range
+
+    ksizex = int(np.round(parameter * inp1.shape[0]))
+    if ksizex % 2 == 0:
+        ksizex += 1
+
+    ksizey = int(np.round(parameter * inp1.shape[1]))
+    if ksizey % 2 == 0:
+        ksizey += 1
+
+    kernel = np.ones((ksizex, ksizey), np.uint8)
+
+    return cv2.Laplacian(inp1.astype(np.uint8), cv2.CV_16S, kernel)
+
+
+def laplace2(inp1, inp2, parameter):
+    return laplace1(inp2, inp1, parameter)
