@@ -61,11 +61,12 @@ functions_openCV = [
     "resizeThenGabor1", "resizeThenGabor2",
     "laplace1", "laplace2",
     "canny1", "canny2",
+    "localNormalize1", "localNormalize2"
 ]
 
 functions = functions_atari + statistical_functions + functions_openCV
 
-#functions = ["reScale1"]
+
 # np.seterr(all="raise")
 np.seterr(all="ignore")
 
@@ -2373,3 +2374,63 @@ def canny1(inp1, inp2, parameter):
 
 def canny2(inp1, inp2, parameter):
     return canny1(inp2, inp1, parameter)
+
+
+def localNormalize1(inp1, inp2, parameter):
+    """
+    Apply local normalization to inp1.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value.
+    inp2 : float or np.ndarray
+        Second input value. Not actually used by this function.
+    parameter : float
+        Used for gaussian blur.
+
+    Return
+    ------
+    normalized : float or np.ndarray
+        Normalized image.
+    """
+
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
+        return inp1
+
+    gaussian1 = GaussianBlur(inp1, inp2, parameter)
+    intermediate = gaussian1 - inp1
+
+    squared = cv2.pow(intermediate, 2)
+    gaussian2 = GaussianBlur(squared, inp2, parameter)
+    rooted = cv2.pow(gaussian2, 0.5)
+
+    normalized = intermediate / rooted
+
+    return normalized
+
+def localNormalize2(inp1, inp2, parameter):
+    """
+    Apply local normalization to inp2.
+
+    Parameters
+    ----------
+    inp1 : float or np.ndarray
+        First input value. Not actually used by this function.
+    inp2 : float or np.ndarray
+        Second input value.
+    parameter : float
+        Used for gaussian blur.
+
+    Return
+    ------
+    normalized : float or np.ndarray
+        Normalized image.
+    """
+
+    normalized = localNormalize1(inp2, inp1, parameter)
+
+    return normalized
+
+    
+
