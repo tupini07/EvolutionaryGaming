@@ -1988,7 +1988,7 @@ def shiftDown1(inp1, inp2, parameter):
     if parameter < 0:
         parameter *= -1
 
-    dist = inp1.shape[1] - int(parameter * inp1.shape[0])
+    dist = int(np.round(parameter * inp1.shape[0]))
 
     upper = inp1[:dist]
     lower = inp1[dist:]
@@ -2023,7 +2023,7 @@ def shiftDown2(inp1, inp2, parameter):
     if parameter < 0:
         parameter *= -1
 
-    dist = inp2.shape[1] - int(parameter * inp2.shape[0])
+    dist = int(np.round(parameter * inp2.shape[0]))
 
     upper = inp2[:dist]
     lower = inp2[dist:]
