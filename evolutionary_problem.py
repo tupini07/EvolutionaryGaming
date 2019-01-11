@@ -89,7 +89,9 @@ def evaluator(candidate: List, args: Dict) -> float:
         return np.NINF
 
     # else just proceed to make the evaluation
+    seed = int(args['seed'])
     env = gym.make(cc.ATARI_GAME)
+    env.seed(seed)
     observation = env.reset()
     total_score = 0.0
 

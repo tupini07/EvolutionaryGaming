@@ -2,6 +2,8 @@ import random
 import sys
 from time import time
 
+from typing import Dict, List
+
 import inspyred
 from inspyred import ec
 
@@ -34,7 +36,7 @@ def main(prng=None, display=False):
     ea.observer = problem.observer
 
     final_pop = ea.evolve(generator=problem.generator,
-                          evaluator=problem.evaluator,
+                          evaluator=evaluate,
                           pop_size=9, 
                           bounder=problem.bounder,
                           maximize=cc.EA_MAXIMIZE,
@@ -50,6 +52,15 @@ def main(prng=None, display=False):
         print('Best Solution: \n{0}'.format(str(best)))
     return ea
 
+@ec.evaluators.evaluator
+def evaluate(candidate : List, args : Dict):
+    if len(sys.argv) > 1:
+        args['seed'] = sys.argv[1]
+    else:
+        args['seed'] = time()
+
+    return problem.evaluator(candidates=[candidate], args=args)
+    
 
 if __name__ == '__main__':
     main(display=True)
