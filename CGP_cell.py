@@ -65,6 +65,9 @@ class CGP_cell:
         inp1 = self.program.get_cell(self.inputs[0]).last_value
         inp2 = self.program.get_cell(self.inputs[1]).last_value
 
+        # print(
+            # f"{self.function.__name__} ({np.array(inp1).shape}, {np.array(inp2).shape})")
+
         self.last_value = np.squeeze(
             np.nan_to_num(
                 self.function(inp1, inp2, self.parameter)))
@@ -73,7 +76,7 @@ class CGP_cell:
             self.last_value = np.clip(self.last_value, -1, 1)
 
         # set maximum size
-        max_res_size = 3_000_000
+        max_res_size = 1_000_000
         while self.last_value.size >= max_res_size:
 
             # just get current shape and see how much will the size change if we change the highest dimension
