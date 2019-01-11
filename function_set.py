@@ -1191,7 +1191,7 @@ def Sobel1(inp1, inp2, parameter):
         Image after application of Sobel operator.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
 
     mat_array_1 = cv2.UMat(np.float32(inp1))
@@ -1223,7 +1223,7 @@ def Sobel2(inp1, inp2, parameter):
         Image after application of Sobel operator.
     """
 
-    if not isinstance(inp2, np.ndarray):
+    if not isinstance(inp2, np.ndarray) or len(inp2.shape) != 2:
         return inp2
 
     mat_array_2 = cv2.UMat(np.float32(inp2))
@@ -1256,7 +1256,7 @@ def Sobelx1(inp1, inp2, parameter):
         Image after application of Sobel operator.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
 
     mat_array_1 = cv2.UMat(np.float32(inp1))
@@ -1289,7 +1289,7 @@ def Sobelx2(inp1, inp2, parameter):
         Image after application of Sobel operator.
     """
 
-    if not isinstance(inp2, np.ndarray):
+    if not isinstance(inp2, np.ndarray) or len(inp2.shape) != 2:
         return inp2
 
     mat_array_2 = cv2.UMat(np.float32(inp2))
@@ -1322,7 +1322,7 @@ def Sobely1(inp1, inp2, parameter):
         Image after application of Sobel operator.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
 
     mat_array_1 = cv2.UMat(np.float32(inp1))
@@ -1355,7 +1355,7 @@ def Sobely2(inp1, inp2, parameter):
         Image after application of Sobel operator.
     """
 
-    if not isinstance(inp2, np.ndarray):
+    if not isinstance(inp2, np.ndarray) or len(inp2.shape) != 2:
         return inp2
 
     mat_array_2 = cv2.UMat(np.float32(inp2))
@@ -1457,7 +1457,7 @@ def smoothMedian1(inp1, inp2, parameter):
         Blurred image.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
 
     # if parameter < 0:
@@ -1494,7 +1494,7 @@ def smoothMedian2(inp1, inp2, parameter):
         Blurred image.
     """
 
-    if not isinstance(inp2, np.ndarray):
+    if not isinstance(inp2, np.ndarray) or len(inp2.shape) != 2:
         return inp2
 
     # if parameter < 0:
@@ -1530,7 +1530,7 @@ def smoothBilateral1(inp1, inp2, parameter):
         Blurred image.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
 
     if parameter < 0:
@@ -1569,7 +1569,7 @@ def smoothBilateral2(inp1, inp2, parameter):
         Blurred image.
     """
 
-    if not isinstance(inp2, np.ndarray):
+    if not isinstance(inp2, np.ndarray) or len(inp2.shape) != 2:
         return inp2
 
     if parameter < 0:
@@ -1608,7 +1608,7 @@ def smoothBlur1(inp1, inp2, parameter):
         Blurred image.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
 
     if parameter < 0:
@@ -1646,7 +1646,7 @@ def smoothBlur2(inp1, inp2, parameter):
         Blurred image.
     """
 
-    if not isinstance(inp2, np.ndarray):
+    if not isinstance(inp2, np.ndarray) or len(inp2.shape) != 2:
         return inp2
 
     if parameter < 0:
@@ -1826,7 +1826,7 @@ def shiftRight1(inp1, inp2, parameter):
 
     if not isinstance(inp1, np.ndarray):
         return inp1
-        
+
     if len(inp1.shape) == 1:
         return inp1
 
