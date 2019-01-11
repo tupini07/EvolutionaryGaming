@@ -181,7 +181,7 @@ class CGP_program:
                 dot.edge(str(inp), str(ic))
 
         dot.render(picture_name)
-        os.remove(picture_name)  # remove RAW dot file
+        # os.remove(picture_name)  # remove RAW dot file
 
     def __repr__(self):
         """
