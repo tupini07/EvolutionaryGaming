@@ -1,16 +1,22 @@
 import random
+import sys
 from time import time
-import inspyred
-import evolutionary_problem as problem
-import constants as cc
 
+import inspyred
 from inspyred import ec
+
+import constants as cc
+import evolutionary_problem as problem
 
 
 def main(prng=None, display=False):
     if prng is None:
         prng = random.Random()
-        prng.seed(time())
+
+        if len(sys.argv) > 1:
+            prng.seed(sys.argv[1])
+        else:
+            prng.seed(time())
 
     ea = inspyred.ec.GA(prng)
 
