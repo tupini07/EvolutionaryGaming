@@ -36,31 +36,23 @@ def main(prng=None, display=False):
     ea.observer = problem.observer
 
     final_pop = ea.evolve(generator=problem.generator,
-                          evaluator=evaluate,
-                          pop_size=9, 
+                          evaluator=problem.evaluator,
+                          pop_size=9,
                           bounder=problem.bounder,
                           maximize=cc.EA_MAXIMIZE,
                           tournament_size=3,
                           max_generations=120,
-                          num_selected=6, # for crossover, only this # of parents are chosen 
-                          num_elites=3, # number of elites for generaitonal replacement
-                          mutation_rate=0.7, 
-                          render=False)  
+                          num_selected=6,  # for crossover, only this # of parents are chosen
+                          num_elites=3,  # number of elites for generaitonal replacement
+                          mutation_rate=0.7,
+                          render=False)
 
     if display:
         best = max(final_pop)
         print('Best Solution: \n{0}'.format(str(best)))
+
     return ea
 
-@ec.evaluators.evaluator
-def evaluate(candidate : List, args : Dict):
-    if len(sys.argv) > 1:
-        args['seed'] = sys.argv[1]
-    else:
-        args['seed'] = time()
-
-    return problem.evaluator(candidates=[candidate], args=args)
-    
 
 if __name__ == '__main__':
     main(display=True)

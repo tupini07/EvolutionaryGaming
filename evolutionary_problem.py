@@ -3,6 +3,7 @@ import math
 import multiprocessing
 import os
 import random
+import sys
 from typing import Dict, List
 
 import gym
@@ -81,7 +82,7 @@ def evaluator(candidate: List, args: Dict) -> float:
                   for i in range(0, len(candidate), 4)]  # split into chunks of 4
 
     program = CGP_program(cpg_genome)
-    
+
     # program.draw_function_graph("currently_evaluating")  # TODO: remove when doing final evaluation
 
     # if current program doesn't make use of input nodes then just return -inf as firtness
@@ -89,9 +90,11 @@ def evaluator(candidate: List, args: Dict) -> float:
         return np.NINF
 
     # else just proceed to make the evaluation
-    seed = int(args['seed'])
     env = gym.make(cc.ATARI_GAME)
-    env.seed(seed)
+
+    if len(sys.argv) > 1:
+        env.seed(int(sys.argv[1]))
+
     observation = env.reset()
     total_score = 0.0
 
@@ -101,8 +104,8 @@ def evaluator(candidate: List, args: Dict) -> float:
             env.render()
 
         try:
-            
-            observation = ((observation)/255.0) * (1 - -1) + -1 
+
+            observation = ((observation)/255.0) * (1 - -1) + -1
             action = program.evaluate(np.transpose(observation, [2, 0, 1]))
 
         except MemoryError:
