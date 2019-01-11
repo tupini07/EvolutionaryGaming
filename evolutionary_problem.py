@@ -62,11 +62,16 @@ def observer(population, num_generations, num_evaluations, args):
     # Write results to file
 
     # create results file if it doesn't exist already
-    if not os.path.isfile("./results.csv"):
-        with open("./results.csv", "w+") as ff:
+    if len(sys.argv) > 3:
+        logfilename = sys.argv[3]
+    else:
+        logfilename = "./results.csv"
+    if not os.path.isfile(logfilename):
+        print(logfilename)
+        with open(logfilename, "w+") as ff:
             ff.write("Game Name,Generation,Fitness,Individual\n")
 
-    with open("./results.csv", "a+") as ff:
+    with open(logfilename, "a+") as ff:
         # append information on the current individuals in the population to the results file
         for p in population:
             ff.write(
