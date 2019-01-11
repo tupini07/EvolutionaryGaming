@@ -11,30 +11,15 @@ from scipy.ndimage.filters import median_filter
 
 import cv2
 
-functions_atari = ["add", "lt", "average", "aminus", "mult", "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2", "sqrt1", "sqrt2", "cpow1", "cpow2", "ypow", "exp1", "exp2",
-                   "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1", "asin2", "atan1", "atan2", "max2", "min2",
-                   "split_before",
-                   "split_after",
-                   "range_in",
-                   "index_y",
-                   "index_p",
-                   "vectorize",
-                   "first",
-                   "last",
-                   "rotate",
-                   "push_back",
-                   "push_front",
-                   "set_fs",
-                   "sum_fs",
-                   "transpose",
-                   "vecfromdouble",
-                   "y_wire",
-                   "no_op",
-                   "const_fs",
-                   "constvectord",
-                   "zeros",
-                   "ones",
-                   "reverse"]
+functions_atari = ["add", "lt", "average", "aminus", "mult",
+                   "cmult1", "cmult2", "inv1", "inv2", "abs1", "abs2",
+                   "sqrt1", "sqrt2", "cpow1", "cpow2", "ypow", "exp1", "exp2",
+                   "sin1", "sin2", "sqrtxy", "acos1", "acos2", "asin1",
+                   "asin2", "atan1", "atan2", "max2", "min2",
+                   "split_before", "split_after", "range_in", "index_y", "index_p", "vectorize", "first", "last",
+                   "rotate", "push_back", "push_front", "set_fs", "sum_fs", "transpose",
+                   "vecfromdouble", "y_wire", "no_op", "const_fs", "constvectord", "zeros",
+                   "ones", "reverse"]
 
 statistical_functions = [
     "stddev", "skew", "kurtosis", "mean", "range", "round_st", "ceil", "floor", "max1", "min1"
@@ -2405,6 +2390,7 @@ def localNormalize1(inp1, inp2, parameter):
 
     return normalized
 
+
 def localNormalize2(inp1, inp2, parameter):
     """
     Apply local normalization to inp2.
@@ -2428,7 +2414,7 @@ def localNormalize2(inp1, inp2, parameter):
 
     return normalized
 
-    
+
 def differences1(inp1, inp2, parameter):
     """
     Return the gradient of inp1.
@@ -2455,6 +2441,7 @@ def differences1(inp1, inp2, parameter):
 
     return gradient
 
+
 def differences2(inp1, inp2, parameter):
     """
     Return the gradient of inp2.
@@ -2477,6 +2464,7 @@ def differences2(inp1, inp2, parameter):
     gradient = differences1(inp2, inp1, parameter)
 
     return gradient
+
 
 def avgDifferences1(inp1, inp2, parameter):
     """
@@ -2505,6 +2493,7 @@ def avgDifferences1(inp1, inp2, parameter):
     avg = np.mean(gradient)
 
     return avg
+
 
 def avgDifferences2(inp1, inp2, parameter):
     """
