@@ -1,3 +1,4 @@
+import itertools
 import random
 import sys
 
@@ -19,7 +20,7 @@ def test_functionset_accept_type():
         np.ndarray, np.ndarray
         Scalar, np.ndarray
         np.ndarray, Scalar
-        Scalar, Scalar 
+        Scalar, Scalar
     """
 
     for fname in fst.functions:
@@ -28,20 +29,26 @@ def test_functionset_accept_type():
 
         func = getattr(fst, fname)
 
-        test_matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        test_matrix0 = np.array([1, 2, 3, 4, 5, 6, 7])
+        test_matrix1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         test_matrix2 = np.array([[11, 22, 33, 44, 41], [55, 66, 77, 88, 85], [
                                 99, 100, 111, 112, 199], [113, 114, 115, 116, 133]])
+        test_matrix3 = np.array([[[2.42592027e-04, 1.92521620e-01, 8.78703764e-01],
+                                  [2.16552246e-01, 2.73009222e-01, 8.73941110e-01]],
+
+                                 [[1.00600025e-01, 3.28003203e-01, 9.42664245e-01],
+                                  [3.43682259e-01, 8.87961491e-01, 7.08044033e-02]],
+
+                                 [[4.62203008e-01, 2.24871123e-01, 7.33267856e-01],
+                                  [5.85063713e-02, 8.36420046e-01, 2.23164288e-01]]])
+
         test_scalar = 42
         test_parameter = 0.5
 
-        tests = [[test_matrix, test_matrix],
-                 [test_matrix, test_matrix2],
-                 [test_matrix2, test_matrix],
-                 [test_matrix2, test_matrix2],
-                 [test_scalar, test_matrix],
-                 [test_matrix, test_scalar],
-                 [test_scalar, test_scalar],
-                 [0, 0]]
+        tt = [test_matrix0, test_matrix1,
+              test_matrix2, test_matrix3, test_scalar, 0]
+
+        tests = itertools.product(tt, tt)
 
         for t_inp1, t_inp2 in tests:
             try:
@@ -78,7 +85,7 @@ def test_mutation_same_size():
     before_mutation = len(individual)
 
     individual = eap.mutate(random.Random(), [individual], {
-                            "mutation_rate": 2,
+        "mutation_rate": 2,
                             "_ec": ea_test})[0]
 
     after_mutation = len(individual)
