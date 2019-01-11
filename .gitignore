@@ -2,6 +2,7 @@
 results.csv
 *.svg
 problamtic_CGP_program
+currently_evaluating
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

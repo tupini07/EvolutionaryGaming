@@ -1684,7 +1684,7 @@ def unsharpen1(inp1, inp2, parameter):
         Unsharpened image.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
 
     inp1 = np.float32(inp1)
@@ -1716,7 +1716,7 @@ def unsharpen2(inp1, inp2, parameter):
         Unsharpened image.
     """
 
-    if not isinstance(inp2, np.ndarray):
+    if not isinstance(inp2, np.ndarray) or len(inp2.shape) != 2:
         return inp2
 
     inp2 = np.float32(inp2)
@@ -1750,6 +1750,7 @@ def shiftLeft1(inp1, inp2, parameter):
 
     if not isinstance(inp1, np.ndarray):
         return inp1
+
     if len(inp1.shape) == 1:
         return inp1
 
@@ -1825,6 +1826,7 @@ def shiftRight1(inp1, inp2, parameter):
 
     if not isinstance(inp1, np.ndarray):
         return inp1
+        
     if len(inp1.shape) == 1:
         return inp1
 
