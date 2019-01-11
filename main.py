@@ -37,7 +37,7 @@ def main(prng=None, display=False):
                           evaluator=problem.evaluator,
                           pop_size=9, 
                           bounder=problem.bounder,
-                          maximize=problem.maximize,
+                          maximize=cc.EA_MAXIMIZE,
                           tournament_size=3,
                           max_generations=120,
                           num_selected=6, # for crossover, only this # of parents are chosen 

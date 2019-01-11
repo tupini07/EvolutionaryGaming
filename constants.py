@@ -5,6 +5,7 @@ import gym
 
 # ATARI_GAME = "SpaceInvaders-v0"
 ATARI_GAME = "Boxing-v0"
+EA_MAXIMIZE = True
 
 _env = gym.make(ATARI_GAME)
 _env.reset()
