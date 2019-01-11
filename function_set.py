@@ -192,13 +192,8 @@ def GaussianBlur(inp1, inp2, parameter):
         Blurred version of inp1.
     """
 
-    if not isinstance(inp1, np.ndarray):
+    if not isinstance(inp1, np.ndarray) or len(inp1.shape) != 2:
         return inp1
-
-    if len(inp1.shape) != 2:
-        print(inp1.shape)
-        print(inp1)
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
     if parameter < 0:
         parameter *= -1
