@@ -997,7 +997,7 @@ def range_in(inp1, inp2, parameter):
         parameter = np.nan_to_num(parameter)
 
         if isinstance(inp2, np.ndarray):
-            inp2 = inp2.mean()
+            inp2 = np.nan_to_num(inp2.mean())
 
         inp2 = np.clip(inp2, -1, 1)
 
@@ -1019,7 +1019,7 @@ def range_in(inp1, inp2, parameter):
 def index_y(inp1, inp2, parameter):
     if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         if isinstance(inp2, np.ndarray):
-            inp2 = inp2.mean()
+            inp2 = np.nan_to_num(inp2.mean())
 
         inp2 = np.clip(inp2, -1, 1)
 
