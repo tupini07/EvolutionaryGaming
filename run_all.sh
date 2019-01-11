@@ -12,6 +12,6 @@ for g in ${games[@]}; do for s in ${seeds[@]}; do
     echo ---------------------------------------
     echo
 
-    python main.py $s $g
-
+    python main.py $s $g ./results_${g}_${s}
+    
 done; done

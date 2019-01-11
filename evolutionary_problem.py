@@ -57,15 +57,15 @@ def observer(population, num_generations, num_evaluations, args):
     for p in sorted(population, key=lambda x: x.fitness, reverse=True):
         print("\t" + str(p.fitness))
 
-    print()
-
     # Write results to file
 
     # create results file if it doesn't exist already
-    if len(sys.argv) > 3:
+    if len(sys.argv) > 2:
         logfilename = sys.argv[3]
+        
     else:
         logfilename = "./results.csv"
+
     if not os.path.isfile(logfilename):
         print(logfilename)
         with open(logfilename, "w+") as ff:
