@@ -1,10 +1,14 @@
 """Here we define constants to be used in the algorithm"""
 import gym
+import sys
 
 # these are taken from the Atari paper
 
 # ATARI_GAME = "SpaceInvaders-v0"
 ATARI_GAME = "Boxing-v0"
+if len(sys.argv) > 2:
+    ATARI_GAME = sys.argv[2]
+
 EA_MAXIMIZE = True
 
 _env = gym.make(ATARI_GAME)
