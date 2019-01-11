@@ -84,6 +84,8 @@ def evaluator(candidate: List, args: Dict) -> float:
     program = CGP_program(cpg_genome)
 
     program.draw_function_graph("currently_evaluating")  # TODO: remove when doing final evaluation
+    with open("currently_evaluating.txt", "w+") as ff:
+        ff.write(str(program))
 
     # if current program doesn't make use of input nodes then just return -inf as firtness
     if not any(x.active for x in program.input_cells):
