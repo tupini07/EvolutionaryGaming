@@ -12,6 +12,6 @@ for g in ${games[@]}; do for s in ${seeds[@]}; do
     echo ---------------------------------------
     echo
 
-    python main.py $s $g ./results_${g}_${s}
-    
+    python main.py $s $g ./results_${g}_${s}.csv
+
 done; done

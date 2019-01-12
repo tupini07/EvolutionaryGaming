@@ -919,8 +919,11 @@ def mean(inp1, inp2, parameter):
 
 
 def range(inp1, inp2, parameter):
-    if isinstance(inp1, np.ndarray):
+    if isinstance(inp1, np.ndarray) and len(inp1) > 0:
         return inp1.max() - inp1.min() - 1
+        
+    elif len(inp1) == 0:
+        return 0
 
     else:
         return inp1
