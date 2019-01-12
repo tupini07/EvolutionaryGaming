@@ -1096,6 +1096,8 @@ def push_front(inp1, inp2, parameter):
 
 def set_fs(inp1, inp2, parameter):
     if _is_matrix_matrix(inp1, inp2):
+        if inp1.shape[0] == 0:
+            return inp1
         return np.array([inp1[0]] * len(inp2))
 
     elif _is_matrix_scalar(inp1, inp2):
