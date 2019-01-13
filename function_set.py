@@ -562,6 +562,8 @@ def ypow(inp1, inp2, parameter):
 
     if isinstance(inp2, np.ndarray):
         inp2 = np.mean(inp2)
+    if inp2 < 0:
+        inp2 *= -1
 
     return np.power(inp1, inp2)
 
