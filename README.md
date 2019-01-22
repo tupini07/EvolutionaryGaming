@@ -8,6 +8,6 @@
 * CGP_cell.py contains the code for a cell in a CGP_program.
 
 
-A video of the best individual produced by the algorithm playing the `Boxing` game can be seen [here](https://www.youtube.com/watch?v=wc8BotWIuHs)
+A video of the best individual produced by the algorithm playing the `Boxing` game can be seen [here](https://youtu.be/vE1OzXCKFUQ)
 
 The report for this project can be seen [here](https://github.com/sejo95/EvolutionaryGaming/blob/master/Report.pdf)
