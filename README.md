@@ -7,12 +7,8 @@ techniques have proven quite effective as well. In this paper,
 we apply a specific evolutionary technique called Cartesian
 Genetic Programming (CGP) which will let us evolve
 programs to play Atari games. The performance of our method
-will then be compared with the state of the art in automatic
+is then be compared with the state of the art in automatic
 game playing.
-
-CGP has long been used for image related tasks, specifically
-in the field of image recognition and image filtering with
-quite good results.
 
 The report for this project can be seen [here](/Report.pdf)
 
